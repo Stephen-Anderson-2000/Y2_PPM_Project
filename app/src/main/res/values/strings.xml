@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">carerApp</string>
+    <string name="hello_title">HELLO</string>
+    <string name="help_button">HELP</string>
+    <string name="what_is_this_button">WHAT IS THIS?</string>
+    <string name="patient_name">PATIENT</string>
+    <string name="carer_button">CARER</string>
+</resources>
