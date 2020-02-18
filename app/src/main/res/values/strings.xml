@@ -5,4 +5,14 @@
     <string name="what_is_this_button">WHAT IS THIS?</string>
     <string name="patient_name">PATIENT</string>
     <string name="carer_button">CARER</string>
+    <string name="carer_name">CARER</string>
+    <string name="patients_button">PATIENTS</string>
+    <string name="research_data_button">RESEARCH DATA</string>
+    <string name="welcome_title">WELCOME</string>
+    <string name="which_are_you_header">WHICH ARE YOU?</string>
+    <string name="ok_button">OK</string>
+    <string name="name_header">NAME</string>
+    <string name="patient_toggle">PATIENT</string>
+    <string name="carer_toggle">CARER</string>
+    <string name="name_box">PLEASE ENTER YOUR NAME HERE..</string>
 </resources>
