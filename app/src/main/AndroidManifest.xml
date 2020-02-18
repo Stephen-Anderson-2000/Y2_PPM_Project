@@ -18,6 +18,7 @@
         </activity>
         <activity android:name=".CarerHomeActivity" ></activity>
         <activity android:name=".PatientHomeActivity" ></activity>
+        <activity android:name=".CarerInfoActivity"></activity>
         <activity android:name=".popUp"></activity>
     </application>
 
