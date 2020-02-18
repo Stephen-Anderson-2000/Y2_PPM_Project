@@ -7,12 +7,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class CarerHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.patient_home);
+        setContentView(R.layout.carer_home);
 
         //GUI Button initialisation and event listener
         Button whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         whatIsThisButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, popUp.class));
+                startActivity(new Intent(CarerHomeActivity.this, popUp.class));
 
 
             }
