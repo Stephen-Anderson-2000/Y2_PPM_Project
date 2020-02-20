@@ -40,9 +40,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 else{
                     //implement pop up to tell user to check if they are a patient or carer
                 }
-
-
-
             }
         });
     }
@@ -55,7 +52,6 @@ public class WelcomeActivity extends AppCompatActivity {
             }
             if(buttonView == carerToggle) {
                 patientToggle.setChecked(false);
-
             }
         }
     };
