@@ -53,7 +53,7 @@ public class WelcomeActivity extends AppCompatActivity {
             if (buttonView == patientToggle) {
                 carerToggle.setChecked(false);
             }
-            if (buttonView == carerToggle) {
+            if(buttonView == carerToggle) {
                 patientToggle.setChecked(false);
 
             }
