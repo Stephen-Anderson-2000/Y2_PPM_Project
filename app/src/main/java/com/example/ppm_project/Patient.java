@@ -1,9 +1,6 @@
 package com.example.ppm_project;
 
-import android.app.Activity;
 import android.location.Location;
-import android.os.Bundle;
-import android.widget.Button;
 
 public class Patient extends Account {
     private Location patientLocation;
