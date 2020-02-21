@@ -24,6 +24,13 @@ public class AccelerationData
         calcVariance(yArray);
         calcVariance(zArray);
 
+        //Must now compare against a 'threshold' value.
+        //The variance of the data gathered was:
+        //x (NORMAL): 0.0315 (ERRATIC): 0.383
+        //y (NORMAL): 0.127  (ERRATIC): 0.35
+        //z (NORMAL): 0.042  (ERRATIC): 0.213
+
+        //Perhaps somewhere around 0.2 as a minimum threshold for erratic movement?
     }
 
     //Calculates the mean of an array by iterating through.
