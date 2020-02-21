@@ -38,6 +38,8 @@
         android:background="@android:color/holo_orange_dark"
         android:text="@string/help_button"
         android:textSize="36sp"
+        android:onClick="sendHelp"
+
         app:layout_constraintBottom_toTopOf="@+id/whatIsThisButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

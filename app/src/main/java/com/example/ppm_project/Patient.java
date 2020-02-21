@@ -1,14 +1,16 @@
 package com.example.ppm_project;
 
+import android.location.Location;
+
 public class Patient extends Account {
-    private LocationData patientLocation;
+    private Location patientLocation;
     private Carer theCarer;
     private boolean isInDistress = false;
 
-    public void setPatientLocation(LocationData patientLocation) { this.patientLocation = patientLocation; }
+    public void setPatientLocation(Location patientLocation) { this.patientLocation = patientLocation; }
     public void setTheCarer(Carer theCarer) { this.theCarer = theCarer; }
 
-    public LocationData getPatientLocation() { return patientLocation; }
+    public Location getPatientLocation() { return patientLocation; }
     public Carer getTheCarer() { return theCarer; }
 
     public boolean checkInDistress()
