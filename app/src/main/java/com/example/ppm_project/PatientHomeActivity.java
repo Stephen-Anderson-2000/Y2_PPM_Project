@@ -30,7 +30,7 @@ public class PatientHomeActivity extends AppCompatActivity {
 
         //GUI Button initialisation and event listener
         whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
-        carerButton = (Button) findViewById(R.id.carerButton);
+        carerButton = (Button) findViewById(R.id.patientButton);
         helpButton = (Button) findViewById(R.id.helpButton);
 
         myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);

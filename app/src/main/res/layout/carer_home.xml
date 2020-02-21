@@ -51,17 +51,17 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="@string/what_is_this_button"
-        app:layout_constraintBottom_toTopOf="@+id/carerButton"
+        app:layout_constraintBottom_toTopOf="@+id/patientButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/carerButton"
+        android:id="@+id/patientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="@string/carer_button"
+        android:text="@string/patients_button"
         app:layout_constraintBottom_toTopOf="@+id/researchDataButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
