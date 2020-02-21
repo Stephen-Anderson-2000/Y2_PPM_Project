@@ -20,13 +20,12 @@ public class Patient extends Account {
         return isInDistress;
     }
 
-    public HelpMessage sendHelpMessage()
+    public void sendHelpMessage()
     {
         HelpMessage newMessage = new HelpMessage();
         newMessage.setSender(this);
         newMessage.setRecipient(theCarer);
         newMessage.setSenderLocation(patientLocation);
-
-        return newMessage;
+        newMessage.sendHelpMessage();
     }
 }
