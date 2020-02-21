@@ -29,13 +29,13 @@ public class ArrayListOfCarers {
         // Stub definition. Need to find a good way to load the data with minimal parsing
     }
 
-    public boolean verifyCarerDetails(Patient thePatient)
+    public boolean verifyCarerDetails(int thePatientID)
     {
         boolean detailsValid = false;
 
         for (Patient aPatient: carersList)
         {
-            if (carersList.contains(thePatient))
+            if (aPatient.getUserID() == thePatientID)
             {
                 detailsValid = true;
             }

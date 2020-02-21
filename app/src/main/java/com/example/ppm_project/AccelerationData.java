@@ -7,10 +7,8 @@ import java.util.ArrayList;
 
 public class AccelerationData
 {
-    // Set data as a struct?
-    //accelerationData;
 
-    public void setAccelData()
+    public void getAccelData()
     {
         // Stub definition. Need to find a way to fetch the csv file and then turn it into the
         // acceleration data as well
