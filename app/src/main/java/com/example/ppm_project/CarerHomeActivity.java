@@ -19,7 +19,7 @@ import java.io.*;
 public class CarerHomeActivity extends AppCompatActivity {
 
     String TAG = "CarerHomeActivity";
-    public String  actualfilepath="";
+    public String  actualFilePath="";
 
     TextView textPath;
     Button filePicker;
@@ -38,8 +38,6 @@ public class CarerHomeActivity extends AppCompatActivity {
                 Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 fileIntent.setType("text/*");
                 startActivityForResult(fileIntent, 10);
-
-
             }
         });
 
@@ -59,33 +57,33 @@ public class CarerHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        switch (requestCode){
-            case 10:
-                //String path = data.getData().getPath();
-                StringBuilder allData = new StringBuilder();
-                Uri uri = data.getData();
-                File file = new File(uri.getPath());//create path from uri
-                final String[] split = file.getPath().split(":");//split the path.
-                actualfilepath = split[1];
+        if (requestCode == 10) {
+            Uri uri = data.getData();
+            File file = new File(uri.getPath());//create path from uri
+            final String[] split = file.getPath().split(":");//split the path.
+            actualFilePath = split[1];
 
-                if (isReadStoragePermissionGranted()) {
-                    try {
-                        String row;
-                        BufferedReader csvReader = new BufferedReader(new FileReader(actualfilepath));
-                        while ((row = csvReader.readLine()) != null) {
-                            String[] csvData = row.split(",");
-                            for(int i = 0; i < csvData.length; i++){
-                                allData.append(csvData[i]+" ");
-                            }
-                        }
-                    } catch (java.io.IOException s) {
-                        System.out.println(s.getMessage());
+            textPath.setText(readCsvFile(actualFilePath));
+        }
+    }
+
+    protected String readCsvFile(String actualFilePath) {
+        StringBuilder allData = new StringBuilder();
+        if (isReadStoragePermissionGranted()) {
+            try {
+                String row;
+                BufferedReader csvReader = new BufferedReader(new FileReader(actualFilePath));
+                while ((row = csvReader.readLine()) != null) {
+                    String[] csvData = row.split(",");
+                    for(int i = 0; i < csvData.length; i++){
+                        allData.append(csvData[i]).append(" ");
                     }
                 }
-                textPath.setText(allData.toString());
-
-                break;
+            } catch (java.io.IOException s) {
+                System.out.println(s.getMessage());
+            }
         }
+        return allData.toString();
     }
 
     public  boolean isReadStoragePermissionGranted() {
