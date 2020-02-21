@@ -30,14 +30,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/helloTitle" />
 
-    <TextView
-        android:id="@+id/filePath"
-        android:layout_width="344dp"
-        android:layout_height="92dp"
-        android:layout_marginBottom="20dp"
+    <ScrollView
+        android:id="@+id/FileScroll"
+        android:layout_width="fill_parent"
+        android:layout_height="300dp"
         app:layout_constraintBottom_toTopOf="@+id/whatIsThisButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/carerName">
+
+        <TextView
+            android:id="@+id/filePath"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
     <Button
         android:id="@+id/whatIsThisButton"
