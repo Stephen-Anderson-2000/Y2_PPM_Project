@@ -3,7 +3,6 @@ package com.example.ppm_project;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-
 import androidx.annotation.Nullable;
 
 public class popUp extends Activity {
