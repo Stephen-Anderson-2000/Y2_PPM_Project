@@ -2,17 +2,11 @@ package com.example.ppm_project;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,7 +14,6 @@ import java.io.*;
 
 public class CarerHomeActivity extends AppCompatActivity {
     public String  actualFilePath="";
-    private String TAG = "CarerHomeActivity";
 
     AccountList theAccounts = new AccountList();
     Carer currentCarer;
@@ -72,49 +65,13 @@ public class CarerHomeActivity extends AppCompatActivity {
             final String[] split = file.getPath().split(":");//split the path.
             actualFilePath = split[1];
             ReadCSV csvReader = new ReadCSV();
-            textPath.setText(readFile(actualFilePath));
+            textPath.setText(csvReader.readFile(this, actualFilePath));
 
             System.out.println("Successfully read");
         }
     }
 
-    public String readFile(String actualFilePath) {
-        StringBuilder allData = new StringBuilder();
-        if (isReadStoragePermissionGranted()) {
-            try {
-                String row;
-                BufferedReader csvReader = new BufferedReader(new FileReader(actualFilePath));
-                while ((row = csvReader.readLine()) != null) {
-                    String[] csvData = row.split(",");
-                    for(int i = 0; i < csvData.length; i++){
-                        allData.append(csvData[i]).append(" ");
-                    }
-                }
-            } catch (java.io.IOException s) {
-                System.out.println(s.getMessage());
-            }
-        }
-        return allData.toString();
-    }
 
-    public  boolean isReadStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted1");
-                return true;
-            } else {
-
-                Log.v(TAG,"Permission is revoked1");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
-                return false;
-            }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted1");
-            return true;
-        }
-    }
 
 
 }
