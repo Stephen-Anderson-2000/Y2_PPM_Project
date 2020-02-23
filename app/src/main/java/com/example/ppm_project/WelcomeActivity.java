@@ -14,6 +14,9 @@ public class WelcomeActivity extends AppCompatActivity {
    private ToggleButton carerToggle;
    private Button ok;
 
+   int enteredUserID;
+   AccountList theAccounts = new AccountList();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,17 +33,18 @@ public class WelcomeActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(carerToggle.isChecked())
+                if(carerToggle.isChecked() && theAccounts.verifyCarerDetails(enteredUserID))
                 {
                     openCarerHomeActivity();
                 }
-                else if(patientToggle.isChecked())
+                else if(patientToggle.isChecked() && theAccounts.verifyPatientDetails(enteredUserID))
                 {
                     openPatientHomeActivity();
                 }
                 else
                 {
                     //implement pop up to tell user to check if they are a patient or carer
+                    //and to check their ID
                 }
             }
         });
