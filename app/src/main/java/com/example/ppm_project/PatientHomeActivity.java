@@ -30,15 +30,8 @@ public class PatientHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        try
-        {
-            CurrentUserID currentUserID = new CurrentUserID();
-            currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
-        }
-        catch (Exception e)
-        {
-            System.out.println("Account array not working");
-        }
+        CurrentUserID currentUserID = new CurrentUserID();
+        currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
 
         System.out.println(currentPatient.getFirstName());
 

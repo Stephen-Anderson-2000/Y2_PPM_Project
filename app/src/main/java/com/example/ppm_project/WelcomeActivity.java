@@ -2,6 +2,7 @@ package com.example.ppm_project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -16,7 +17,7 @@ public class WelcomeActivity extends AppCompatActivity {
    private Button ok;
    private EditText idBox;
 
-   public int enteredUserID;
+   public int enteredUserID = -1;
    public AccountList theAccounts = new AccountList();
    CurrentUserID currentUserID = new CurrentUserID();
 
@@ -41,7 +42,13 @@ public class WelcomeActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                enteredUserID = Integer.parseInt(idBox.getText().toString());
+                try {
+                    enteredUserID = Integer.parseInt(idBox.getText().toString());
+                }
+                catch (Exception e)
+                {
+                    System.out.println("Couldn't parse the ID box input to an integer");
+                }
                 if(carerToggle.isChecked() && theAccounts.getCarerByID(enteredUserID) != null)
                 {
                     currentUserID.setTheUser(enteredUserID);
@@ -101,9 +108,9 @@ public class WelcomeActivity extends AppCompatActivity {
         carer2.setUserID(5);
         carer2.setFirstName("Nathan");
 
-        //carer1.addPatient(patient1);
-        //carer1.addPatient(patient2);
-        //carer2.addPatient(patient3);
+        carer1.addPatient(patient1);
+        carer1.addPatient(patient2);
+        carer2.addPatient(patient3);
 
         patient1.setTheCarer(carer1);
         patient2.setTheCarer(carer1);
@@ -114,6 +121,8 @@ public class WelcomeActivity extends AppCompatActivity {
         theAccounts.addPatientToList(patient2);
         theAccounts.addCarerToList(carer2);
         theAccounts.addPatientToList(patient3);
+
+        System.out.println(carer1.getPatientArrayList().get(1));
     }
 
 }
