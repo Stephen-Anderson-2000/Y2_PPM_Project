@@ -42,13 +42,13 @@ public class AccountList {
         return carersList;
     }
 
-    public boolean verifyCarerDetails(int thePatientID)
+    public boolean verifyCarerDetails(int theCarerID)
     {
         boolean detailsValid = false;
 
         for (Carer aCarer: carersList)
         {
-            if (aCarer.getUserID() == thePatientID)
+            if (aCarer.getUserID() == theCarerID)
             {
                 detailsValid = true;
             }

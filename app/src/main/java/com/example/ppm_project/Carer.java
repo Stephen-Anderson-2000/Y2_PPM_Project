@@ -17,4 +17,6 @@ public class Carer extends Account {
     }
 
     public void receiveMessage(HelpMessage receivedMessage) { this.theReceivedMessage = receivedMessage; }
+
+    public HelpMessage getTheReceivedMessage() { return theReceivedMessage; }
 }

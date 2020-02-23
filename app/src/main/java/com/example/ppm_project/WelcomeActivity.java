@@ -20,6 +20,8 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        makePatientCarer();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
 
@@ -54,8 +56,8 @@ public class WelcomeActivity extends AppCompatActivity {
     CompoundButton.OnCheckedChangeListener changeChecker = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (buttonView == patientToggle) { carerToggle.setChecked(false); }
-            if(buttonView == carerToggle) { patientToggle.setChecked(false); }
+            if (buttonView == patientToggle) { carerToggle.setChecked(false); enteredUserID = 1; }
+            if(buttonView == carerToggle) { patientToggle.setChecked(false); enteredUserID = 2; }
         }
     };
 
@@ -67,6 +69,24 @@ public class WelcomeActivity extends AppCompatActivity {
     private void openPatientHomeActivity(){
         Intent intent = new Intent(this, PatientHomeActivity.class);
         startActivity(intent);
+    }
+
+
+    private void makePatientCarer()
+    {
+        Patient tempPatient = new Patient();
+        tempPatient.setUserID(1);
+        tempPatient.setFirstName("Stephen");
+
+        Carer tempCarer = new Carer();
+        tempCarer.setUserID(2);
+        tempCarer.setFirstName("Sam");
+        tempCarer.addPatient(tempPatient);
+
+        tempPatient.setTheCarer(tempCarer);
+
+        theAccounts.addCarerToList(tempCarer);
+        theAccounts.addPatientToList(tempPatient);
     }
 
 }

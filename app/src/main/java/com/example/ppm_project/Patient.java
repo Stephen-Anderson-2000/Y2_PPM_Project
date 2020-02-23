@@ -8,7 +8,7 @@ public class Patient extends Account {
     private boolean isInDistress = false;
 
     public void setPatientLocation(Location patientLocation) { this.patientLocation = patientLocation; }
-    public void setTheCarer(Carer theCarer) { this.theCarer = theCarer; }
+    public void setTheCarer(Carer newCarer) { this.theCarer = newCarer; }
 
     public Location getPatientLocation() { return patientLocation; }
     public Carer getTheCarer() { return theCarer; }
