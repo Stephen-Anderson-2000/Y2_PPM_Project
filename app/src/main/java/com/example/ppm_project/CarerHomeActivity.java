@@ -45,7 +45,7 @@ public class CarerHomeActivity extends AppCompatActivity {
         whatIsThisButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CarerHomeActivity.this, popUp.class));
+                startActivity(new Intent(CarerHomeActivity.this, whatIsThisPopUpActivity.class));
             }
         });
 
