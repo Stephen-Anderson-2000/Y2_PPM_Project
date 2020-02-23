@@ -30,8 +30,6 @@ public class PatientHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //makePatientCarer();
-
         try
         {
             CurrentUserID currentUserID = new CurrentUserID();
@@ -42,6 +40,7 @@ public class PatientHomeActivity extends AppCompatActivity {
             System.out.println("Account array not working");
         }
 
+        System.out.println(currentPatient.getFirstName());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);

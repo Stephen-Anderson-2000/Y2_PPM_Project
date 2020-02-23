@@ -8,7 +8,14 @@ public class Carer extends Account {
 
     public void addPatient(Patient newPatient)
     {
-        // Stub definition. Need to add the passed in patient object to the vector
+        for (Patient aPatient: patientVector)
+        {
+            if (aPatient.getUserID() == newPatient.getUserID())
+            {
+                return;
+            }
+        }
+        patientVector.add(newPatient);
     }
 
     public void removePatient(Patient oldPatient)

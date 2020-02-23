@@ -60,6 +60,8 @@ public class CarerHomeActivity extends AppCompatActivity {
             }
         });
 
+        System.out.println(currentCarer.getFirstName());
+
         if (currentCarer.getTheReceivedMessage() != null)
         {
             System.out.println("Help Message received from: " + currentCarer.getTheReceivedMessage().getSender().getFirstName());
