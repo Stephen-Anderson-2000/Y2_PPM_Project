@@ -124,7 +124,7 @@ public class PatientHomeActivity extends AppCompatActivity {
             actualFilePath = split[1];
             ReadCSV csvReader = new ReadCSV();
             if (isReadStoragePermissionGranted() && actualFilePath != null) {
-                textPath.setText(csvReader.readFile(actualFilePath));
+                textPath.setText(csvReader.readFile(this, actualFilePath));
                 System.out.println("Successfully read");
             }
         }
