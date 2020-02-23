@@ -16,7 +16,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
    public int enteredUserID;
    public AccountList theAccounts = new AccountList();
-   Account currentAccount = new Account();
+   CurrentUserID currentUserID = new CurrentUserID();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +37,12 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(carerToggle.isChecked() && theAccounts.getCarerByID(enteredUserID) != null)
                 {
-                    currentAccount = theAccounts.getCarerByID(enteredUserID);
+                    currentUserID.setTheUser(enteredUserID);
                     openCarerHomeActivity();
                 }
                 else if(patientToggle.isChecked() && theAccounts.getPatientByID(enteredUserID) != null)
                 {
-                    currentAccount = theAccounts.getPatientByID(enteredUserID);
+                    currentUserID.setTheUser(enteredUserID);
                     openPatientHomeActivity();
                 }
                 else

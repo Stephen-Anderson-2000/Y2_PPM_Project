@@ -29,8 +29,8 @@ public class CarerHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        //currentCarer = theAccounts.getCarerByID(CurrentUserID)
+        CurrentUserID currentUserID = new CurrentUserID();
+        currentCarer = theAccounts.getCarerByID(currentUserID.getTheUser());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.carer_home);
@@ -59,6 +59,7 @@ public class CarerHomeActivity extends AppCompatActivity {
 
             }
         });
+        
     }
 
     @Override

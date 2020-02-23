@@ -24,7 +24,8 @@ public class PatientHomeActivity extends AppCompatActivity {
     private LocationListener myLocListener;
 
     AccountList theAccounts = new AccountList();
-    Patient thisPatient;
+
+    Patient currentPatient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,8 @@ public class PatientHomeActivity extends AppCompatActivity {
 
         try
         {
-            thisPatient = theAccounts.getPatientByID(1);
+            CurrentUserID currentUserID = new CurrentUserID();
+            currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
         }
         catch (Exception e)
         {
@@ -136,13 +138,11 @@ public class PatientHomeActivity extends AppCompatActivity {
             System.out.println("Sent");
 
             System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
-
         }
         catch (Exception e)
         {
             System.out.println("Chances are the carer and patient objects can't be found");
         }
-
     }
 
     void fetchLocation() {
@@ -153,8 +153,9 @@ public class PatientHomeActivity extends AppCompatActivity {
             }
             return;
         }
-        myLocManager.requestLocationUpdates("gps", 10000, 2, myLocListener);
-        thisPatient.setPatientLocation(this.myLocManager.getLastKnownLocation("gps"));
+        myLocManager.requestLocationUpdates("gps", 5000, 2, myLocListener);
+        currentPatient.setPatientLocation(this.myLocManager.getLastKnownLocation("gps"));
+        System.out.println("Update patient location");
     }
 
 }
