@@ -3,10 +3,7 @@ package com.example.ppm_project;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -72,32 +69,14 @@ public class CarerHomeActivity extends AppCompatActivity {
             final String[] split = file.getPath().split(":");//split the path.
             actualFilePath = split[1];
             ReadCSV csvReader = new ReadCSV();
-            textPath.setText(readFile(actualFilePath));
-
+            if (isReadStoragePermissionGranted()) {
+                textPath.setText(csvReader.readFile(actualFilePath));
+            }
             System.out.println("Successfully read");
         }
     }
 
-    public String readFile(String actualFilePath) {
-        StringBuilder allData = new StringBuilder();
-        if (isReadStoragePermissionGranted()) {
-            try {
-                String row;
-                BufferedReader csvReader = new BufferedReader(new FileReader(actualFilePath));
-                while ((row = csvReader.readLine()) != null) {
-                    String[] csvData = row.split(",");
-                    for(int i = 0; i < csvData.length; i++){
-                        allData.append(csvData[i]).append(" ");
-                    }
-                }
-            } catch (java.io.IOException s) {
-                System.out.println(s.getMessage());
-            }
-        }
-        return allData.toString();
-    }
-
-    public  boolean isReadStoragePermissionGranted() {
+    public boolean isReadStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {

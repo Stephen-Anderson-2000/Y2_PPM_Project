@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="82dp"
         android:layout_height="22dp"
         android:layout_marginTop="8dp"
@@ -35,9 +36,9 @@
         android:layout_height="101dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/holo_orange_dark"
+        android:onClick="sendHelp"
         android:text="@string/help_button"
         android:textSize="36sp"
-        android:onClick="sendHelp"
 
         app:layout_constraintBottom_toTopOf="@+id/whatIsThisButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,5 +65,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/researchDataButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="384dp"
+        android:text="@string/research_data_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

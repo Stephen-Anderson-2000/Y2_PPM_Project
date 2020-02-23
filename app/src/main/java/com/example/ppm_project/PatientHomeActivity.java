@@ -6,25 +6,34 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import java.io.File;
 
 
 public class PatientHomeActivity extends AppCompatActivity {
     private Button whatIsThisButton;
+    private Button filePicker;
     private Button carerButton;
     private Button helpButton;
+    private TextView textPath;
     private LocationManager myLocManager;
     private LocationListener myLocListener;
 
+    private String actualFilePath = "";
+    private String TAG = "PatientHomeActivity";
     AccountList theAccounts = new AccountList();
-
     Patient currentPatient;
 
     @Override
@@ -40,8 +49,19 @@ public class PatientHomeActivity extends AppCompatActivity {
 
         //GUI Button initialisation and event listener
         whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
+        filePicker = findViewById(R.id.researchDataButton);
         carerButton = (Button) findViewById(R.id.patientButton);
         helpButton = (Button) findViewById(R.id.helpButton);
+        textPath = findViewById(R.id.filePath); //TEMP
+
+        filePicker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                fileIntent.setType("text/*");
+                startActivityForResult(fileIntent, 10);
+            }
+        });
 
         myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         myLocListener = new LocationListener() {
@@ -92,6 +112,41 @@ public class PatientHomeActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 10) {
+            Uri uri = data.getData();
+            File file = new File(uri.getPath());//create path from uri
+            final String[] split = file.getPath().split(":");//split the path.
+            actualFilePath = split[1];
+            ReadCSV csvReader = new ReadCSV();
+            if (isReadStoragePermissionGranted() && actualFilePath != null) {
+                textPath.setText(csvReader.readFile(actualFilePath));
+                System.out.println("Successfully read");
+            }
+        }
+    }
+
+    public boolean isReadStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted1");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked1");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted1");
+            return true;
+        }
     }
 
 
@@ -121,15 +176,16 @@ public class PatientHomeActivity extends AppCompatActivity {
             Patient thePatient = theAccounts.getPatientByID(1);
             Carer theCarer = theAccounts.getCarerByID(2);
             Location patientLoc = thePatient.getPatientLocation();
-
-
-            // Don't run the following without permission as it causes an unhandled exception and the app freezes
-            // It is merely for testing purposes
-            System.out.println(this.myLocManager.getLastKnownLocation("gps"));
             thePatient.sendHelpMessage();
-            System.out.println("Sent");
 
-            System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
+            // The following is merely for testing purposes
+            try
+            {
+                System.out.println("Sent");
+                System.out.println(this.myLocManager.getLastKnownLocation("gps"));
+                System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
+            }
+            catch (SecurityException e) { }
         }
         catch (Exception e)
         {
