@@ -62,11 +62,16 @@ public class CarerHomeActivity extends AppCompatActivity {
 
         System.out.println(currentCarer.getFirstName());
 
+        Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
+        checkReceivedThread.start();
+
+        /*
+
         if (currentCarer.getTheReceivedMessage() != null)
         {
             System.out.println("Help Message received from: " + currentCarer.getTheReceivedMessage().getSender().getFirstName());
         }
-
+        */
     }
 
     @Override

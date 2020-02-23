@@ -1,6 +1,7 @@
 package com.example.ppm_project;
 
 public class CheckMessageReceived implements Runnable{
+
     Carer currentCarer;
     private boolean messageIsReceived = false;
 
@@ -15,11 +16,14 @@ public class CheckMessageReceived implements Runnable{
         {
             try
             {
-                if (currentCarer.getTheReceivedMessage() != null)
+                HelpMessage receivedMessage = currentCarer.getTheReceivedMessage();
+                if (receivedMessage != null)
                 {
-                    System.out.println("Received the message");
+                    System.out.println("Received the help message from " + receivedMessage.getSender().getFirstName());
                     messageIsReceived = true;
                     // display the popup
+                    currentCarer.receiveMessage(null);
+                    break;
                 }
                 Thread.sleep(1000);
             }
