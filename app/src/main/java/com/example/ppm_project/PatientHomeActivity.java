@@ -23,8 +23,24 @@ public class PatientHomeActivity extends AppCompatActivity {
     private LocationManager myLocManager;
     private LocationListener myLocListener;
 
+    AccountList theAccounts = new AccountList();
+    Patient thisPatient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //makePatientCarer();
+
+        try
+        {
+            thisPatient = theAccounts.getPatientByID(1);
+        }
+        catch (Exception e)
+        {
+            System.out.println("Account array not working");
+        }
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
 
@@ -38,7 +54,8 @@ public class PatientHomeActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location myLocation)
             {
-                //thisPatient.setLocation(myLocation)
+                System.out.println("My location is " + myLocation);
+                //thisPatient.setLocation(myLocation);
             }
 
             @Override
@@ -105,21 +122,26 @@ public class PatientHomeActivity extends AppCompatActivity {
     {
         // Need to find a way to get the carer and patient into it
 
-        Carer theCarer = null;
-        Patient thePatient = null;
-        Location patientLoc = null;
-        HelpMessage myHelpMessage = new HelpMessage();
+        try
+        {
+            Patient thePatient = theAccounts.getPatientByID(1);
+            Carer theCarer = theAccounts.getCarerByID(2);
+            Location patientLoc = thePatient.getPatientLocation();
 
-        myHelpMessage.setRecipient(theCarer);
-        myHelpMessage.setSender(thePatient);
-        myHelpMessage.setSenderLocation(patientLoc);
-        myHelpMessage.sendHelpMessage();
 
-        System.out.println("Sent");
+            // Don't run the following without permission as it causes an unhandled exception and the app freezes
+            // It is merely for testing purposes
+            System.out.println(this.myLocManager.getLastKnownLocation("gps"));
+            thePatient.sendHelpMessage();
+            System.out.println("Sent");
 
-        // Don't run the following without permission as it causes an unhandled exception and the app freezes
-        // It is merely for testing purposes
-        System.out.println(this.myLocManager.getLastKnownLocation("gps"));
+            System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("Chances are the carer and patient objects can't be found");
+        }
 
     }
 
@@ -132,6 +154,8 @@ public class PatientHomeActivity extends AppCompatActivity {
             return;
         }
         myLocManager.requestLocationUpdates("gps", 10000, 2, myLocListener);
+        thisPatient.setPatientLocation(this.myLocManager.getLastKnownLocation("gps"));
     }
+
 }
 

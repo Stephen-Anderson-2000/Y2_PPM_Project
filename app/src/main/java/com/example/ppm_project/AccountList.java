@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class AccountList {
-    private ArrayList<Carer> carersList = new ArrayList<Carer>();
-    private ArrayList<Patient> patientsList = new ArrayList<Patient>();
+    private static ArrayList<Carer> carersList = new ArrayList<Carer>();
+    private static ArrayList<Patient> patientsList = new ArrayList<Patient>();
     private final String carersFileName = "";
     private final String patientsFileName = "";
 
@@ -42,18 +42,16 @@ public class AccountList {
         return carersList;
     }
 
-    public boolean verifyCarerDetails(int theCarerID)
+    public Carer getCarerByID(int accountID)
     {
-        boolean detailsValid = false;
-
         for (Carer aCarer: carersList)
         {
-            if (aCarer.getUserID() == theCarerID)
+            if (aCarer.getUserID() == accountID)
             {
-                detailsValid = true;
+                return aCarer;
             }
         }
-        return detailsValid;
+        return null;
     }
 
     public void addCarerToList(Carer newCarer)
@@ -95,18 +93,16 @@ public class AccountList {
         return patientsList;
     }
 
-    public boolean verifyPatientDetails(int thePatientID)
+    public Patient getPatientByID(int accountID)
     {
-        boolean detailsValid = false;
-
         for (Patient aPatient: patientsList)
         {
-            if (aPatient.getUserID() == thePatientID)
+            if (aPatient.getUserID() == accountID)
             {
-                detailsValid = true;
+                return aPatient;
             }
         }
-        return detailsValid;
+        return null;
     }
 
     public void addPatientToList(Patient newPatient)

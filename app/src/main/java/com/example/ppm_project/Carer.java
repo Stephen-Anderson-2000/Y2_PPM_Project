@@ -16,7 +16,10 @@ public class Carer extends Account {
         // Stub definition. Need to loop through to find and remove the passed in patient object
     }
 
-    public void receiveMessage(HelpMessage receivedMessage) { this.theReceivedMessage = receivedMessage; }
+    public void receiveMessage(HelpMessage receivedMessage) {
+        this.theReceivedMessage = receivedMessage;
+        System.out.println("Received");
+    }
 
     public HelpMessage getTheReceivedMessage() { return theReceivedMessage; }
 }

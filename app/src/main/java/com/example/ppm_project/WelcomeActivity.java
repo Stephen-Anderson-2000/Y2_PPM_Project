@@ -14,13 +14,12 @@ public class WelcomeActivity extends AppCompatActivity {
    private ToggleButton carerToggle;
    private Button ok;
 
-   int enteredUserID;
-   AccountList theAccounts = new AccountList();
+   public int enteredUserID;
+   public AccountList theAccounts = new AccountList();
+   Account currentAccount = new Account();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        makePatientCarer();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
@@ -36,12 +35,14 @@ public class WelcomeActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(carerToggle.isChecked() && theAccounts.verifyCarerDetails(enteredUserID))
+                if(carerToggle.isChecked() && theAccounts.getCarerByID(enteredUserID) != null)
                 {
+                    currentAccount = theAccounts.getCarerByID(enteredUserID);
                     openCarerHomeActivity();
                 }
-                else if(patientToggle.isChecked() && theAccounts.verifyPatientDetails(enteredUserID))
+                else if(patientToggle.isChecked() && theAccounts.getPatientByID(enteredUserID) != null)
                 {
+                    currentAccount = theAccounts.getPatientByID(enteredUserID);
                     openPatientHomeActivity();
                 }
                 else
@@ -51,6 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             }
         });
+        makePatientCarer();
     }
 
     CompoundButton.OnCheckedChangeListener changeChecker = new CompoundButton.OnCheckedChangeListener() {

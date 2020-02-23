@@ -21,11 +21,17 @@ public class CarerHomeActivity extends AppCompatActivity {
     String TAG = "CarerHomeActivity";
     public String  actualFilePath="";
 
+    AccountList theAccounts = new AccountList();
+    Carer currentCarer;
+
     TextView textPath;
     Button filePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //currentCarer = theAccounts.getCarerByID(CurrentUserID)
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.carer_home);
 
@@ -104,6 +110,5 @@ public class CarerHomeActivity extends AppCompatActivity {
             return true;
         }
     }
-
 }
 
