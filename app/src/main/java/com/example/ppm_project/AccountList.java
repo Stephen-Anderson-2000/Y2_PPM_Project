@@ -8,15 +8,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class AccountList {
-    public static ArrayList<Patient> carersList = new ArrayList<Patient>();
-    public static ArrayList<Patient> patientsList = new ArrayList<Patient>();
+    private ArrayList<Carer> carersList = new ArrayList<Carer>();
+    private ArrayList<Patient> patientsList = new ArrayList<Patient>();
     private final String carersFileName = "";
     private final String patientsFileName = "";
 
     public void main()
     {
-        loadCarerArrayList();
-        loadPatientArrayList();
+        setCarerArrayList();
+        setPatientArrayList();
     }
 
     public void saveCarerArrayList()
@@ -24,7 +24,7 @@ public class AccountList {
         try
         {
             BufferedWriter writer = new BufferedWriter(new FileWriter(carersFileName));
-            // Need to find a way to properly write to a file. Can be hard coded for testing purposes
+            // Need to find a way to properly write to a file. Can be hard coded for testing and demonstration purposes
         }
         catch (IOException e)
         {
@@ -32,18 +32,23 @@ public class AccountList {
         }
     }
 
-    public void loadCarerArrayList()
+    public void setCarerArrayList()
     {
         // Stub definition. Need to find a good way to load the data with minimal parsing
+    }
+
+    public ArrayList<Carer> getCarersList()
+    {
+        return carersList;
     }
 
     public boolean verifyCarerDetails(int thePatientID)
     {
         boolean detailsValid = false;
 
-        for (Patient aPatient: carersList)
+        for (Carer aCarer: carersList)
         {
-            if (aPatient.getUserID() == thePatientID)
+            if (aCarer.getUserID() == thePatientID)
             {
                 detailsValid = true;
             }
@@ -51,19 +56,19 @@ public class AccountList {
         return detailsValid;
     }
 
-    public void addCarerToList(Patient newPatient)
+    public void addCarerToList(Carer newCarer)
     {
-        if (!carersList.contains(newPatient))
+        if (!carersList.contains(newCarer))
         {
-            carersList.add(newPatient);
+            carersList.add(newCarer);
         }
     }
 
-    public void removeCarerFromList(Patient oldPatient)
+    public void removeCarerFromList(Carer oldCarer)
     {
-        if (carersList.contains(oldPatient))
+        if (carersList.contains(oldCarer))
         {
-            carersList.remove(oldPatient);
+            carersList.remove(oldCarer);
         }
     }
 
@@ -72,7 +77,7 @@ public class AccountList {
         try
         {
             BufferedWriter writer = new BufferedWriter(new FileWriter(patientsFileName));
-            // Need to find a way to properly write to a file. Can be hard coded for testing purposes
+            // Need to find a way to properly write to a file. Can be hard coded for testing and demonstration purposes
         }
         catch (IOException e)
         {
@@ -80,9 +85,14 @@ public class AccountList {
         }
     }
 
-    public void loadPatientArrayList()
+    public void setPatientArrayList()
     {
         // Stub definition. Need to find a good way to load the data with minimal parsing
+    }
+
+    public ArrayList<Patient> getPatientsList()
+    {
+        return patientsList;
     }
 
     public boolean verifyPatientDetails(int thePatientID)
