@@ -19,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/patientName"
         android:layout_width="82dp"
         android:layout_height="22dp"
         android:layout_marginTop="8dp"

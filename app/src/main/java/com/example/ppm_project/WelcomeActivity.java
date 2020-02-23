@@ -35,6 +35,7 @@ public class WelcomeActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                enteredUserID = enteredUserID;
                 if(carerToggle.isChecked() && theAccounts.getCarerByID(enteredUserID) != null)
                 {
                     currentUserID.setTheUser(enteredUserID);
