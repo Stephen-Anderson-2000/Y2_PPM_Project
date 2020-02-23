@@ -118,34 +118,15 @@ public class PatientHomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 10) {
+            String csvData;
             Uri uri = data.getData();
             File file = new File(uri.getPath());//create path from uri
             final String[] split = file.getPath().split(":");//split the path.
             actualFilePath = split[1];
             ReadCSV csvReader = new ReadCSV();
-            if (isReadStoragePermissionGranted() && actualFilePath != null) {
-                textPath.setText(csvReader.readFile(this, actualFilePath));
-                System.out.println("Successfully read");
-            }
-        }
-    }
+            csvData = csvReader.readFile(this, actualFilePath);
 
-    public boolean isReadStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted1");
-                return true;
-            } else {
-
-                Log.v(TAG,"Permission is revoked1");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
-                return false;
-            }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted1");
-            return true;
+            System.out.println("Successfully read");
         }
     }
 
