@@ -4,7 +4,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,11 +17,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import java.io.*;
-import java.util.ArrayList;
 
 public class CarerHomeActivity extends AppCompatActivity {
-    String TAG = "CarerHomeActivity";
     public String  actualFilePath="";
+    private String TAG = "CarerHomeActivity";
 
     AccountList theAccounts = new AccountList();
     Carer currentCarer;
@@ -29,8 +30,6 @@ public class CarerHomeActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        CurrentUserID currentUserID = new CurrentUserID();
-        currentCarer = theAccounts.getCarerByID(currentUserID.getTheUser());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.carer_home);
@@ -47,7 +46,6 @@ public class CarerHomeActivity extends AppCompatActivity {
             }
         });
 
-
         //GUI Button initialisation and event listener
         Button whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
 
@@ -55,23 +53,15 @@ public class CarerHomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(CarerHomeActivity.this, popUp.class));
-
-
             }
         });
 
+        CurrentUserID currentUserID = new CurrentUserID();
+        currentCarer = theAccounts.getCarerByID(currentUserID.getTheUser());
         System.out.println(currentCarer.getFirstName());
 
         Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
         checkReceivedThread.start();
-
-        /*
-
-        if (currentCarer.getTheReceivedMessage() != null)
-        {
-            System.out.println("Help Message received from: " + currentCarer.getTheReceivedMessage().getSender().getFirstName());
-        }
-        */
     }
 
     @Override
@@ -81,12 +71,14 @@ public class CarerHomeActivity extends AppCompatActivity {
             File file = new File(uri.getPath());//create path from uri
             final String[] split = file.getPath().split(":");//split the path.
             actualFilePath = split[1];
+            ReadCSV csvReader = new ReadCSV();
+            textPath.setText(readFile(actualFilePath));
 
-            textPath.setText(readCsvFile(actualFilePath));
+            System.out.println("Successfully read");
         }
     }
 
-    protected String readCsvFile(String actualFilePath) {
+    public String readFile(String actualFilePath) {
         StringBuilder allData = new StringBuilder();
         if (isReadStoragePermissionGranted()) {
             try {
@@ -123,5 +115,7 @@ public class CarerHomeActivity extends AppCompatActivity {
             return true;
         }
     }
+
+
 }
 
