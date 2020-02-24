@@ -36,7 +36,6 @@
         android:layout_height="101dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/holo_orange_dark"
-        android:onClick="sendHelp"
         android:text="@string/help_button"
         android:textSize="36sp"
 

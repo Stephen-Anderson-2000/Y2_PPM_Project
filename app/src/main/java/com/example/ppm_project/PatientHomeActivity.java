@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -103,7 +102,7 @@ public class PatientHomeActivity extends AppCompatActivity {
         whatIsThisButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(PatientHomeActivity.this, popUp.class));
+                startActivity(new Intent(PatientHomeActivity.this, whatIsThisPopUpActivity.class));
             }
         });
 
@@ -115,7 +114,16 @@ public class PatientHomeActivity extends AppCompatActivity {
             }
         });
 
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendHelp();
+            }
+        });
+
     }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -166,7 +174,7 @@ public class PatientHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void sendHelp(View view)
+    public void sendHelp()
     {
         // Need to find a way to get the carer and patient into it
 
