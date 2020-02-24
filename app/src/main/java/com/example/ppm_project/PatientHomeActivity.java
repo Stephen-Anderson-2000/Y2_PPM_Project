@@ -71,8 +71,7 @@ public class PatientHomeActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location myLocation)
             {
-                System.out.println("My location is " + myLocation);
-                //thisPatient.setLocation(myLocation);
+                fetchLocation();
             }
 
             @Override
@@ -84,8 +83,7 @@ public class PatientHomeActivity extends AppCompatActivity {
             @Override
             public void onProviderDisabled(String provider)
             {
-                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(i);
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             }
         };
 
@@ -96,6 +94,7 @@ public class PatientHomeActivity extends AppCompatActivity {
                         { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET },
                         10);
             }
+            else { fetchLocation(); }
         }
         else { fetchLocation(); }
 
@@ -178,24 +177,16 @@ public class PatientHomeActivity extends AppCompatActivity {
 
     public void sendHelp()
     {
-        // Need to find a way to get the carer and patient into it
-
         try
         {
             Patient thePatient = theAccounts.getPatientByID(1);
             Carer theCarer = theAccounts.getCarerByID(2);
-            Location patientLoc = thePatient.getPatientLocation();
-            thePatient.sendHelpMessage();
-
-            // The following is merely for testing purposes
             try
             {
-                System.out.println("Sent");
-                System.out.println(this.myLocManager.getLastKnownLocation("gps"));
-                System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
-
-                alertDialog.setMessage("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName()+"\n\n"
-                                        + this.myLocManager.getLastKnownLocation("gps"));
+                thePatient.setPatientLocation(myLocManager.getLastKnownLocation("gps"));
+                thePatient.sendHelpMessage();
+                alertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
+                                        "\n\nTheir GPS location is: " + thePatient.getPatientLocation());
                 alertDialog.show();
             }
             catch (SecurityException e) { }
@@ -214,9 +205,9 @@ public class PatientHomeActivity extends AppCompatActivity {
             }
             return;
         }
-        myLocManager.requestLocationUpdates("gps", 5000, 2, myLocListener);
+        myLocManager.requestLocationUpdates("gps", 1000, 0, myLocListener);
+        myLocManager.requestLocationUpdates("network", 1000, 0, myLocListener);
         currentPatient.setPatientLocation(this.myLocManager.getLastKnownLocation("gps"));
-        System.out.println("Update patient location");
     }
 
 }

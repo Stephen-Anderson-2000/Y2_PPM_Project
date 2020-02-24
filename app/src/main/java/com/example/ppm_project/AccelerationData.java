@@ -24,13 +24,13 @@ public class AccelerationData
         System.out.println("Y Variance: " + calcVariance(yArray));
         System.out.println("Z Variance: " + calcVariance(zArray));
 
-        //Must now compare against a 'threshold' value.
-        //The variance of the data gathered was:
-        //x (NORMAL): 0.0315 (ERRATIC): 0.383
-        //y (NORMAL): 0.127  (ERRATIC): 0.35
-        //z (NORMAL): 0.042  (ERRATIC): 0.213
+        // Must now compare against a 'threshold' value.
+        // The variance of the data gathered was:
+        // x (NORMAL): 0.0315 (ERRATIC): 0.383
+        // y (NORMAL): 0.127  (ERRATIC): 0.35
+        // z (NORMAL): 0.042  (ERRATIC): 0.213
 
-        //Perhaps somewhere around 0.2 as a minimum threshold for erratic movement?
+        // Perhaps somewhere around 0.2 as a minimum threshold for erratic movement?
 
         if (calcVariance(xArray) > 0.2 && calcVariance(yArray) > 0.2 && calcVariance(zArray) > 0.2){
             return true;
@@ -39,8 +39,8 @@ public class AccelerationData
         }
     }
 
-    //Calculates the mean of an array by iterating through.
-    //Will be needed to calculate variance.
+    // Calculates the mean of an array by iterating through.
+    // Will be needed to calculate variance.
     public double calcArrayMean(ArrayList<Double> givenArray) {
         double total = 0;
 
@@ -52,25 +52,25 @@ public class AccelerationData
         return (arrayMean);
     }
 
-    //Calculates the variance of an array.
+    // Calculates the variance of an array.
     public double calcVariance(ArrayList<Double> givenArray) {
         ArrayList<Double> squaredDifferenceArray = new ArrayList<Double>();
         double sqDifference;
         double variance;
         double currentValue;
 
-        //Calculate the mean of the array first
+        // Calculate the mean of the array first
         double meanOfArray = calcArrayMean(givenArray);
 
-        //Subtract the mean from each value in the array
-        //Square the result
+        // Subtract the mean from each value in the array
+        // Square the result
         for (int i = 0; i < givenArray.size(); i++ ) {
             currentValue = (givenArray.get(i) - meanOfArray);
             sqDifference = currentValue * currentValue;
             squaredDifferenceArray.add(sqDifference);
         }
 
-        //Average of those squared differences = variance
+        // Average of those squared differences = variance
         variance = calcArrayMean(squaredDifferenceArray);
 
         return (variance);
