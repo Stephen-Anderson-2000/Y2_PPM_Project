@@ -20,8 +20,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 
 
 public class PatientHomeActivity extends AppCompatActivity {
@@ -39,6 +43,11 @@ public class PatientHomeActivity extends AppCompatActivity {
     Patient currentPatient;
 
     AlertDialog alertDialog;
+
+    private ArrayList<Double> xArray = new ArrayList<>();
+    private ArrayList<Double> yArray = new ArrayList<>();
+    private ArrayList<Double> zArray = new ArrayList<>();
+    private Boolean fileRead = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,18 +154,23 @@ public class PatientHomeActivity extends AppCompatActivity {
                 final String[] split = file.getPath().split(":");//split the path.
                 actualFilePath = split[1];
                 ReadCSV csvReader = new ReadCSV();
-                csvReader.readFile(this, actualFilePath);
-                AccelerationData accDat = csvReader.analyseFile();
-                System.out.println("Successfully read");
+                //readFile(this, actualFilePath);
+                AccelerationData accDat = new AccelerationData();// = analyseFile();
+                readFile(actualFilePath);
+                accDat.setVals(xArray, yArray, zArray);
+
+
+
                 if (accDat.isPatientHavingEpisode()){
                     alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
                     alertDialog.show();
+                    sendHelp();
                 } else {
                     alertDialog.setMessage("Patient is showing no signs of an episode.");
                     alertDialog.show();
                 }
             }
-            catch (Exception e) { System.out.println("Failed to read file."); }
+            catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
     }
 
@@ -211,6 +225,59 @@ public class PatientHomeActivity extends AppCompatActivity {
         myLocManager.requestLocationUpdates("gps", 1000, 0, myLocListener);
         myLocManager.requestLocationUpdates("network", 1000, 0, myLocListener);
         currentPatient.setPatientLocation(this.myLocManager.getLastKnownLocation("gps"));
+    }
+
+    public String readFile(String actualFilePath) {
+        StringBuilder allData = new StringBuilder();
+        try {
+            if (isReadStoragePermissionGranted()) {
+                try {
+                    String row;
+                    BufferedReader csvReader = new BufferedReader(new FileReader(actualFilePath));
+                    csvReader.readLine();
+                    while ((row = csvReader.readLine()) != null) {
+                        String[] csvData = row.split(",");
+
+                        xArray.add(Double.valueOf(csvData[3]));
+                        yArray.add(Double.valueOf(csvData[4]));
+                        zArray.add(Double.valueOf(csvData[5]));
+
+                        for (int i = 3; i < csvData.length; i++) {
+                            allData.append(csvData[i]).append("  ");
+                        }
+                        allData.append("\n");
+                        fileRead = true;
+                    }
+
+                } catch (java.io.IOException s) {
+                    System.out.println(s.getMessage());
+                }
+            }
+            return allData.toString();
+        } catch (Exception e) {
+            System.out.println("Caught exception: " + e);
+            return "";
+        }
+    }
+
+    private boolean isReadStoragePermissionGranted() {
+        String TAG = "ReadCSV";
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted");
+            return true;
+        }
     }
 
 }

@@ -22,7 +22,6 @@ public class CheckMessageReceived implements Runnable{
                     System.out.println("Received the help message from " + receivedMessage.getSender().getFirstName());
                     messageIsReceived = true;
                     // display the popup
-                    currentCarer.receiveMessage(null);
                     break;
                 }
                 Thread.sleep(1000);
