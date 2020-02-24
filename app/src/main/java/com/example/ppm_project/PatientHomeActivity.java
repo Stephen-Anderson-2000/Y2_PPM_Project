@@ -37,6 +37,8 @@ public class PatientHomeActivity extends AppCompatActivity {
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
 
+    AlertDialog alertDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -121,6 +123,14 @@ public class PatientHomeActivity extends AppCompatActivity {
             }
         });
 
+        alertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
     }
 
 
@@ -135,14 +145,6 @@ public class PatientHomeActivity extends AppCompatActivity {
             ReadCSV csvReader = new ReadCSV();
             csvReader.readFile(this, actualFilePath);
             AccelerationData accDat = csvReader.analyseFile();
-
-            AlertDialog alertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
-            alertDialog.setTitle("Alert");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
 
             if (accDat.isPatientHavingEpisode()){
                 alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
@@ -191,6 +193,10 @@ public class PatientHomeActivity extends AppCompatActivity {
                 System.out.println("Sent");
                 System.out.println(this.myLocManager.getLastKnownLocation("gps"));
                 System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
+
+                alertDialog.setMessage("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName()+"\n\n"
+                                        + this.myLocManager.getLastKnownLocation("gps"));
+                alertDialog.show();
             }
             catch (SecurityException e) { }
         }

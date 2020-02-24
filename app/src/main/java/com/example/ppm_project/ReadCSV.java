@@ -37,7 +37,7 @@ public class ReadCSV extends AppCompatActivity {
                     zArray.add(Double.valueOf(csvData[5]));
 
                     for(int i = 3; i < csvData.length; i++){
-                        allData.append(csvData[i]).append(" ");
+                        allData.append(csvData[i]).append("  ");
                     }
                     allData.append("\n");
                     fileRead = true;
