@@ -1,6 +1,7 @@
 package com.example.ppm_project;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -34,6 +36,8 @@ public class PatientHomeActivity extends AppCompatActivity {
     private String TAG = "PatientHomeActivity";
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
+
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +123,14 @@ public class PatientHomeActivity extends AppCompatActivity {
             }
         });
 
+        alertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
     }
 
 
@@ -126,13 +138,21 @@ public class PatientHomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 10) {
-            String csvData;
             Uri uri = data.getData();
             File file = new File(uri.getPath());//create path from uri
             final String[] split = file.getPath().split(":");//split the path.
             actualFilePath = split[1];
             ReadCSV csvReader = new ReadCSV();
-            csvData = csvReader.readFile(this, actualFilePath);
+            csvReader.readFile(this, actualFilePath);
+            AccelerationData accDat = csvReader.analyseFile();
+
+            if (accDat.isPatientHavingEpisode()){
+                alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                alertDialog.show();
+            } else {
+                alertDialog.setMessage("Patient is showing no signs of an episode.");
+                alertDialog.show();
+            }
 
             System.out.println("Successfully read");
         }
@@ -173,6 +193,10 @@ public class PatientHomeActivity extends AppCompatActivity {
                 System.out.println("Sent");
                 System.out.println(this.myLocManager.getLastKnownLocation("gps"));
                 System.out.println("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName());
+
+                alertDialog.setMessage("The carer received the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName()+"\n\n"
+                                        + this.myLocManager.getLastKnownLocation("gps"));
+                alertDialog.show();
             }
             catch (SecurityException e) { }
         }

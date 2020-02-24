@@ -8,19 +8,21 @@ import java.util.ArrayList;
 public class AccelerationData
 {
 
-    public void getAccelData()
-    {
-        // Stub definition. Need to find a way to fetch the csv file and then turn it into the
-        // acceleration data as well
+    private ArrayList<Double> xArray = new ArrayList<>();
+    private ArrayList<Double> yArray = new ArrayList<>();
+    private ArrayList<Double> zArray = new ArrayList<>();
+
+    public void setVals(ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z){
+        xArray = x;
+        yArray = y;
+        zArray = z;
     }
 
-    //public /*type goes here*/ getAccelData() { return accelerationData; }
-
-    public void analyseData(ArrayList<Double> xArray, ArrayList<Double> yArray, ArrayList<Double> zArray)
+    public boolean isPatientHavingEpisode()
     {
-        calcVariance(xArray);
-        calcVariance(yArray);
-        calcVariance(zArray);
+        System.out.println("X Variance: " + calcVariance(xArray));
+        System.out.println("Y Variance: " + calcVariance(yArray));
+        System.out.println("Z Variance: " + calcVariance(zArray));
 
         //Must now compare against a 'threshold' value.
         //The variance of the data gathered was:
@@ -29,6 +31,12 @@ public class AccelerationData
         //z (NORMAL): 0.042  (ERRATIC): 0.213
 
         //Perhaps somewhere around 0.2 as a minimum threshold for erratic movement?
+
+        if (calcVariance(xArray) > 0.2 && calcVariance(yArray) > 0.2 && calcVariance(zArray) > 0.2){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //Calculates the mean of an array by iterating through.
