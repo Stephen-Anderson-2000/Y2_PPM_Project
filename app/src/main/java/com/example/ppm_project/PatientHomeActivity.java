@@ -196,14 +196,13 @@ public class PatientHomeActivity extends AppCompatActivity {
     {
         try
         {
-            Patient thePatient = theAccounts.getPatientByID(1);
-            Carer theCarer = theAccounts.getCarerByID(2);
+            Carer theCarer = currentPatient.getTheCarer();
             try
             {
-                thePatient.setPatientLocation(myLocManager.getLastKnownLocation("gps"));
-                thePatient.sendHelpMessage();
+                currentPatient.setPatientLocation(myLocManager.getLastKnownLocation("gps"));
+                currentPatient.sendHelpMessage();
                 alertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
-                                        "\n\nTheir GPS location is: " + thePatient.getPatientLocation());
+                                        "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
                 alertDialog.show();
             }
             catch (SecurityException e) { }

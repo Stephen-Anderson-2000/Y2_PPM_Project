@@ -108,6 +108,10 @@ public class WelcomeActivity extends AppCompatActivity {
         carer2.setUserID(5);
         carer2.setFirstName("Nathan");
 
+        Patient patient4 = new Patient();
+        patient4.setUserID(6);
+        patient4.setFirstName("Emerson");
+
         carer1.addPatient(patient1);
         carer1.addPatient(patient2);
         carer2.addPatient(patient3);
@@ -121,6 +125,7 @@ public class WelcomeActivity extends AppCompatActivity {
         theAccounts.addPatientToList(patient2);
         theAccounts.addCarerToList(carer2);
         theAccounts.addPatientToList(patient3);
+        theAccounts.addPatientToList(patient4);
 
         System.out.println(carer1.getPatientArrayList().get(1));
     }
