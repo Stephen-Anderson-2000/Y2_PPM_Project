@@ -33,7 +33,7 @@ public class PatientHomeActivity extends AppCompatActivity {
     private Button filePicker;
     private Button carerButton;
     private Button helpButton;
-    private TextView textPath;
+    private TextView userNameBox;
     private LocationManager myLocManager;
     private LocationListener myLocListener;
 
@@ -65,7 +65,9 @@ public class PatientHomeActivity extends AppCompatActivity {
         filePicker = findViewById(R.id.researchDataButton);
         carerButton = (Button) findViewById(R.id.patientButton);
         helpButton = (Button) findViewById(R.id.helpButton);
-        textPath = findViewById(R.id.filePath); //TEMP
+        userNameBox = findViewById(R.id.patientNameBox);
+
+        userNameBox.setText(currentPatient.getFirstName());
 
         filePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,7 +155,7 @@ public class PatientHomeActivity extends AppCompatActivity {
                 File file = new File(uri.getPath());//create path from uri
                 final String[] split = file.getPath().split(":");//split the path.
                 actualFilePath = split[1];
-                ReadCSV csvReader = new ReadCSV();
+                //ReadCSV csvReader = new ReadCSV();
                 //readFile(this, actualFilePath);
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 readFile(actualFilePath);

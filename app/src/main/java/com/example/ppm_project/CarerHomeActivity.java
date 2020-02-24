@@ -36,6 +36,7 @@ public class CarerHomeActivity extends AppCompatActivity {
     private ArrayList<Double> yArray = new ArrayList<>();
     private ArrayList<Double> zArray = new ArrayList<>();
     private Boolean fileRead = false;
+    private TextView carerNameBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class CarerHomeActivity extends AppCompatActivity {
         setContentView(R.layout.carer_home);
 
         textPath = findViewById(R.id.filePath); //TEMP
+        carerNameBox = findViewById(R.id.carerNameBox);
         filePicker = findViewById(R.id.researchDataButton);
 
         filePicker.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +69,8 @@ public class CarerHomeActivity extends AppCompatActivity {
 
         CurrentUserID currentUserID = new CurrentUserID();
         currentCarer = theAccounts.getCarerByID(currentUserID.getTheUser());
+
+        carerNameBox.setText(currentCarer.getFirstName());
 
         Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
         checkReceivedThread.start();
