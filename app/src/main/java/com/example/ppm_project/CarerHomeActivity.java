@@ -58,8 +58,8 @@ public class CarerHomeActivity extends AppCompatActivity {
 
         Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
         checkReceivedThread.start();
-        if (currentCarer.theReceivedMessage != null)
-        {
+
+        if (currentCarer.theReceivedMessage != null) {
             displayMessageResultsDialog();
         }
     }
@@ -83,16 +83,6 @@ public class CarerHomeActivity extends AppCompatActivity {
                     dialog.dismiss();
                 }
             });
-
-            if (accDat.isPatientHavingEpisode()){
-                alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
-                alertDialog.show();
-            } else {
-                alertDialog.setMessage("Patient is showing no signs of an episode.");
-                alertDialog.show();
-            }
-
-            System.out.println("Successfully read");
         }
     }
 
@@ -105,10 +95,16 @@ public class CarerHomeActivity extends AppCompatActivity {
             }
         });
 
-        alertDialog.setMessage("Patient: " + currentCarer.theReceivedMessage.getSender().getFirstName() +
-                " is in distress. They are currently at GPS location: " + currentCarer.theReceivedMessage.getSenderLocation());
+        try
+        {
+            alertDialog.setMessage("Patient: " + currentCarer.theReceivedMessage.getSender().getFirstName() +
+                    " is in distress. They are currently at GPS location: " + currentCarer.theReceivedMessage.getSenderLocation());
+        }
+        catch (Exception e)
+        { alertDialog.setMessage("Patient: " + currentCarer.theReceivedMessage.getSender().getFirstName() +
+            " is in distress.");
+        }
         alertDialog.show();
-
     }
 }
 
