@@ -58,6 +58,10 @@ public class CarerHomeActivity extends AppCompatActivity {
 
         Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
         checkReceivedThread.start();
+        if (currentCarer.theReceivedMessage != null)
+        {
+            displayMessageResultsDialog();
+        }
     }
 
     @Override
@@ -92,8 +96,19 @@ public class CarerHomeActivity extends AppCompatActivity {
         }
     }
 
+    private void displayMessageResultsDialog() {
+        AlertDialog alertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
 
+        alertDialog.setMessage("Patient: " + currentCarer.theReceivedMessage.getSender().getFirstName() +
+                " is in distress. They are currently at GPS location: " + currentCarer.theReceivedMessage.getSenderLocation());
+        alertDialog.show();
 
-
+    }
 }
 
