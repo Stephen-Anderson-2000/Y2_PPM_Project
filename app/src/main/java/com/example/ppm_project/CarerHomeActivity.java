@@ -1,15 +1,18 @@
 package com.example.ppm_project;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import java.io.*;
 
 public class CarerHomeActivity extends AppCompatActivity {
@@ -64,8 +67,26 @@ public class CarerHomeActivity extends AppCompatActivity {
             File file = new File(uri.getPath());//create path from uri
             final String[] split = file.getPath().split(":");//split the path.
             actualFilePath = split[1];
+
             ReadCSV csvReader = new ReadCSV();
             textPath.setText(csvReader.readFile(this, actualFilePath));
+            AccelerationData accDat = csvReader.analyseFile();
+
+            AlertDialog alertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
+            alertDialog.setTitle("Alert");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            if (accDat.isPatientHavingEpisode()){
+                alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                alertDialog.show();
+            } else {
+                alertDialog.setMessage("Patient is showing no signs of an episode.");
+                alertDialog.show();
+            }
 
             System.out.println("Successfully read");
         }
