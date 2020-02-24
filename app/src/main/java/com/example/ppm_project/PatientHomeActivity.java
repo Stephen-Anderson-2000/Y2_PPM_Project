@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -137,23 +138,25 @@ public class PatientHomeActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 10) {
-            Uri uri = data.getData();
-            File file = new File(uri.getPath());//create path from uri
-            final String[] split = file.getPath().split(":");//split the path.
-            actualFilePath = split[1];
-            ReadCSV csvReader = new ReadCSV();
-            csvReader.readFile(this, actualFilePath);
-            AccelerationData accDat = csvReader.analyseFile();
-
-            if (accDat.isPatientHavingEpisode()){
-                alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
-                alertDialog.show();
-            } else {
-                alertDialog.setMessage("Patient is showing no signs of an episode.");
-                alertDialog.show();
+            try
+            {
+                Uri uri = data.getData();
+                File file = new File(uri.getPath());//create path from uri
+                final String[] split = file.getPath().split(":");//split the path.
+                actualFilePath = split[1];
+                ReadCSV csvReader = new ReadCSV();
+                csvReader.readFile(this, actualFilePath);
+                AccelerationData accDat = csvReader.analyseFile();
+                System.out.println("Successfully read");
+                if (accDat.isPatientHavingEpisode()){
+                    alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                    alertDialog.show();
+                } else {
+                    alertDialog.setMessage("Patient is showing no signs of an episode.");
+                    alertDialog.show();
+                }
             }
-
-            System.out.println("Successfully read");
+            catch (Exception e) { System.out.println("Failed to read file."); }
         }
     }
 
