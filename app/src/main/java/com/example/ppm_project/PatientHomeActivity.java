@@ -99,18 +99,7 @@ public class PatientHomeActivity extends AppCompatActivity {
             }
         };
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]
-                        { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.INTERNET },
-                        10);
-            }
-            else { fetchLocation(); }
-        }
-        else { fetchLocation(); }
-
-
+        fetchLocation();
 
         whatIsThisButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,8 +133,6 @@ public class PatientHomeActivity extends AppCompatActivity {
 
     }
 
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 10) {
@@ -161,8 +148,6 @@ public class PatientHomeActivity extends AppCompatActivity {
                 readFile(actualFilePath);
                 accDat.setVals(xArray, yArray, zArray);
 
-
-
                 if (accDat.isPatientHavingEpisode()){
                     alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
                     alertDialog.show();
@@ -175,8 +160,7 @@ public class PatientHomeActivity extends AppCompatActivity {
             catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
     }
-
-
+    
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {

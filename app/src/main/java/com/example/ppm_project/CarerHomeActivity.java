@@ -228,6 +228,7 @@ public class CarerHomeActivity extends AppCompatActivity {
         }
     }
 
+
     private class DisplayPatientLocation extends AsyncTask<URL, Void, String> {
 
         String TAG = "PlusCodeClass";
@@ -280,7 +281,6 @@ public class CarerHomeActivity extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         }
-
     }
 
 
