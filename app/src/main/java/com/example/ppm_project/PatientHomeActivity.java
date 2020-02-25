@@ -182,6 +182,7 @@ public class PatientHomeActivity extends AppCompatActivity {
     {
         try
         {
+            fetchLocation();
             Carer theCarer = currentPatient.getTheCarer();
             try
             {
