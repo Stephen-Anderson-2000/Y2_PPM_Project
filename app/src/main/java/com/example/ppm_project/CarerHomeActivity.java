@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -96,6 +97,7 @@ public class CarerHomeActivity extends AppCompatActivity {
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+
                 }
             });
         }
@@ -163,17 +165,34 @@ public class CarerHomeActivity extends AppCompatActivity {
 
         try
         {
+            HelpMessage theReceivedMessage = currentCarer.getTheReceivedMessage();
             System.out.println("Setting message with Location");
-            alertDialog.setMessage("Patient: " + currentCarer.theReceivedMessage.getSender().getFirstName() +
-                    " is in distress. They are currently at GPS location: " + currentCarer.theReceivedMessage.getSenderLocation());
+            alertDialog.setMessage("Patient: " + theReceivedMessage.getSender().getFirstName() +
+                    " is in distress. They are currently at GPS location: " + theReceivedMessage.getSenderLocation());
             alertDialog.show();
+            Thread.sleep(2000);
+            alertDialog.dismiss();
             currentCarer.receiveMessage(null);
+            Thread.sleep(500);
+            openPatientLocation(theReceivedMessage.getSenderLocation());
         }
         catch (Exception e)
         {
             System.out.println("Caught exception: " + e);
         }
 
+    }
+
+    private void openPatientLocation(Location patientLocation) {
+        double patientLat = patientLocation.getLatitude();
+        double patientLong = patientLocation.getLongitude();
+        String stringLocation = "geo:" + patientLat + "," + patientLong;
+        Uri gmmIntentUri = Uri.parse(stringLocation);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }
     }
 }
 
