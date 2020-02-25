@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,12 +19,16 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import org.json.JSONObject;
 import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class CarerHomeActivity extends AppCompatActivity {
     public String  actualFilePath="";
+
+    String TAG = "CarerHomeActivity";
 
     AccountList theAccounts = new AccountList();
     Carer currentCarer;
@@ -170,10 +173,7 @@ public class CarerHomeActivity extends AppCompatActivity {
             alertDialog.setMessage("Patient: " + theReceivedMessage.getSender().getFirstName() +
                     " is in distress. They are currently at GPS location: " + theReceivedMessage.getSenderLocation());
             alertDialog.show();
-            Thread.sleep(2000);
-            alertDialog.dismiss();
             currentCarer.receiveMessage(null);
-            Thread.sleep(500);
             openPatientLocation(theReceivedMessage.getSenderLocation());
         }
         catch (Exception e)
@@ -184,15 +184,60 @@ public class CarerHomeActivity extends AppCompatActivity {
     }
 
     private void openPatientLocation(Location patientLocation) {
-        double patientLat = patientLocation.getLatitude();
-        double patientLong = patientLocation.getLongitude();
-        String stringLocation = "geo:" + patientLat + "," + patientLong;
-        Uri gmmIntentUri = Uri.parse(stringLocation);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        mapIntent.setPackage("com.google.android.apps.maps");
-        if (mapIntent.resolveActivity(getPackageManager()) != null) {
-            startActivity(mapIntent);
+        try
+        {
+            if (patientLocation != null) {
+                double patientLat = patientLocation.getLatitude();
+                double patientLong = patientLocation.getLongitude();
+                //String stringLocation = "geo:" + patientLat + "," + patientLong;
+                //String stringLocation = "http://plus.codes/api?" + patientLat + "," + patientLong;
+                //String stringLocation = "https://plus.codes/api?address=" + (37.7749) + "," + (-122.4194);
+                JSONObject plusCodeObject = getPlusCodeObject(37.7749, -122.4194);
+                String stringLocation = plusCodeObject.getJSONObject("plus_code").getString("global_code");
+                System.out.println(stringLocation);
+                Uri gmmIntentUri = Uri.parse("https://plus.codes/api?address" + stringLocation);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+           System.out.println(ex);
         }
     }
+
+
+    private JSONObject getPlusCodeObject(double lat, double lon)
+    {
+        try
+        {
+            InputStream inStream = new URL("https://plus.codes/api?address=" + lat + "," + lon).openStream();
+            System.out.println("Opened stream");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
+            System.out.println("Opened reader");
+            String rawJSONString = readStream(reader);
+            return new JSONObject(rawJSONString);
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, "Found exception when parsing JSON ", ex);
+            return null;
+        }
+
+    }
+
+    private static String readStream(Reader rd) throws IOException {
+
+        StringBuilder strBuilder = new StringBuilder();
+        int data;
+        while ((data = rd.read()) != -1) {
+            strBuilder.append((char) data);
+        }
+        return strBuilder.toString();
+    }
+
 }
 
