@@ -5,14 +5,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -187,57 +186,72 @@ public class CarerHomeActivity extends AppCompatActivity {
         try
         {
             if (patientLocation != null) {
-                double patientLat = patientLocation.getLatitude();
-                double patientLong = patientLocation.getLongitude();
-                //String stringLocation = "geo:" + patientLat + "," + patientLong;
-                //String stringLocation = "http://plus.codes/api?" + patientLat + "," + patientLong;
-                //String stringLocation = "https://plus.codes/api?address=" + (37.7749) + "," + (-122.4194);
-                JSONObject plusCodeObject = getPlusCodeObject(37.7749, -122.4194);
-                String stringLocation = plusCodeObject.getJSONObject("plus_code").getString("global_code");
-                System.out.println(stringLocation);
-                Uri gmmIntentUri = Uri.parse("https://plus.codes/api?address" + stringLocation);
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                if (mapIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(mapIntent);
-                }
+                URL theURL = new URL("https://plus.codes/api?address=" + patientLocation.getLatitude() + "," + patientLocation.getLongitude());
+                new DisplayPatientLocation().execute(theURL);
             }
         }
         catch (Exception ex)
         {
-           System.out.println(ex);
+            System.out.println(ex);
         }
     }
 
 
-    private JSONObject getPlusCodeObject(double lat, double lon)
-    {
-        try
+    private class DisplayPatientLocation extends AsyncTask<URL, Void, String> {
+
+        String TAG = "PlusCodeClass";
+
+        @Override
+        protected String doInBackground(URL... theURL)
         {
-            InputStream inStream = new URL("https://plus.codes/api?address=" + lat + "," + lon).openStream();
-            System.out.println("Opened stream");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
-            System.out.println("Opened reader");
-            String rawJSONString = readStream(reader);
-            return new JSONObject(rawJSONString);
-        }
-        catch (Exception ex)
-        {
-            Log.e(TAG, "Found exception when parsing JSON ", ex);
+            try {
+                JSONObject plusCodeJSON = getPlusCodeObject(theURL[0]);
+                String urlPlusCode = "https://plus.codes/" + plusCodeJSON.getJSONObject("plus_code").getString("global_code");
+                return urlPlusCode;
+            }
+            catch (Exception ex)
+            {
+                Log.e(TAG, "Found exception when parsing JSON", ex);
+            }
             return null;
         }
 
-    }
-
-    private static String readStream(Reader rd) throws IOException {
-
-        StringBuilder strBuilder = new StringBuilder();
-        int data;
-        while ((data = rd.read()) != -1) {
-            strBuilder.append((char) data);
+        private JSONObject getPlusCodeObject(URL theURL)
+        {
+            try
+            {
+                InputStream inStream = theURL.openStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
+                String rawJSONString = readStream(reader);
+                return new JSONObject(rawJSONString);
+            }
+            catch (Exception ex) { Log.e(TAG, "Found exception when fetching JSON", ex); return null; }
         }
-        return strBuilder.toString();
+
+
+        private String readStream(Reader rd) throws IOException {
+
+            StringBuilder strBuilder = new StringBuilder();
+            int data;
+            while ((data = rd.read()) != -1) {
+                strBuilder.append((char) data);
+            }
+            return strBuilder.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String urlPlusCode) {
+            System.out.println(urlPlusCode);
+            Uri gmmIntentUri = Uri.parse(urlPlusCode);
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                startActivity(mapIntent);
+            }
+        }
+
     }
+
 
 }
 
