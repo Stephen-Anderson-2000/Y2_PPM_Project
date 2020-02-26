@@ -28,7 +28,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 
-public class PatientHomeActivity extends AppCompatActivity {
+public class PatientHomeActivity extends AppCompatActivity
+{
     private Button whatIsThisButton;
     private Button filePicker;
     private Button carerButton;
@@ -36,26 +37,23 @@ public class PatientHomeActivity extends AppCompatActivity {
     private TextView userNameBox;
     private LocationManager myLocManager;
     private LocationListener myLocListener;
-
     private String actualFilePath = "";
     private String TAG = "PatientHomeActivity";
-    AccountList theAccounts = new AccountList();
-    Patient currentPatient;
-
-    AlertDialog alertDialog;
-
     private ArrayList<Double> xArray = new ArrayList<>();
     private ArrayList<Double> yArray = new ArrayList<>();
     private ArrayList<Double> zArray = new ArrayList<>();
     private Boolean fileRead = false;
+    AlertDialog messageAlertDialog;
+    AlertDialog gpsAlertDialog;
+    AccountList theAccounts = new AccountList();
+    Patient currentPatient;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
 
         CurrentUserID currentUserID = new CurrentUserID();
         currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
-
-        System.out.println(currentPatient.getFirstName());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
@@ -66,24 +64,17 @@ public class PatientHomeActivity extends AppCompatActivity {
         carerButton = (Button) findViewById(R.id.patientButton);
         helpButton = (Button) findViewById(R.id.helpButton);
         userNameBox = findViewById(R.id.patientNameBox);
-
         userNameBox.setText(currentPatient.getFirstName());
 
-        filePicker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                fileIntent.setType("text/*");
-                startActivityForResult(fileIntent, 10);
-            }
-        });
+        makeButtonListeners();
+        setupDialogBoxes();
 
         myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         myLocListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location myLocation)
             {
-                fetchLocation();
+                currentPatient.setPatientLocation(fetchLocation());
             }
 
             @Override
@@ -93,26 +84,39 @@ public class PatientHomeActivity extends AppCompatActivity {
             public void onProviderEnabled(String provider) { }
 
             @Override
-            public void onProviderDisabled(String provider)
-            {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
+            public void onProviderDisabled(String provider) { }
         };
 
-        fetchLocation();
+        checkGPSPermissions();
+        checkGPSStatus();
 
-        whatIsThisButton.setOnClickListener(new View.OnClickListener() {
+    }
+
+    public void makeButtonListeners()
+    {
+        filePicker.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                fileIntent.setType("text/*");
+                startActivityForResult(fileIntent, 10);
+            }
+        });
+
+        whatIsThisButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(PatientHomeActivity.this, whatIsThisPopUpActivity.class));
             }
         });
 
-        carerButton.setOnClickListener(new View.OnClickListener() {
+        carerButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 openCarerInfoActivity();
-
             }
         });
 
@@ -122,19 +126,33 @@ public class PatientHomeActivity extends AppCompatActivity {
                 sendHelp();
             }
         });
+    }
 
-        alertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
-        alertDialog.setTitle("Alert");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+    public void setupDialogBoxes()
+    {
+        messageAlertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
+        messageAlertDialog.setTitle("Alert");
+        messageAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
 
+        gpsAlertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
+        gpsAlertDialog.setTitle("Alert");
+        gpsAlertDialog.setMessage("The GPS location on your device is currently disabled. Please enable it" +
+                " for full functionality of the app.");
+        gpsAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
         if (requestCode == 10) {
             try
             {
@@ -142,19 +160,18 @@ public class PatientHomeActivity extends AppCompatActivity {
                 File file = new File(uri.getPath());//create path from uri
                 final String[] split = file.getPath().split(":");//split the path.
                 actualFilePath = split[1];
-                //ReadCSV csvReader = new ReadCSV();
-                //readFile(this, actualFilePath);
+
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 readFile(actualFilePath);
                 accDat.setVals(xArray, yArray, zArray);
 
                 if (accDat.isPatientHavingEpisode()){
-                    alertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
-                    alertDialog.show();
+                    messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                    messageAlertDialog.show();
                     sendHelp();
                 } else {
-                    alertDialog.setMessage("Patient is showing no signs of an episode.");
-                    alertDialog.show();
+                    messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
+                    messageAlertDialog.show();
                 }
             }
             catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
@@ -164,16 +181,18 @@ public class PatientHomeActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
-        switch (requestCode){
+        switch (requestCode)
+        {
             case 10:
-                fetchLocation();
+                currentPatient.setPatientLocation(fetchLocation());
                 break;
             default:
                 break;
         }
     }
 
-    private void openCarerInfoActivity(){
+    private void openCarerInfoActivity()
+    {
         Intent intent = new Intent(this, CarerInfoActivity.class);
         startActivity(intent);
     }
@@ -182,35 +201,28 @@ public class PatientHomeActivity extends AppCompatActivity {
     {
         try
         {
-            fetchLocation();
-            Carer theCarer = currentPatient.getTheCarer();
-            try
-            {
-                currentPatient.setPatientLocation(myLocManager.getLastKnownLocation("gps"));
+            if (myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                Carer theCarer = currentPatient.getTheCarer();
+                currentPatient.setPatientLocation(fetchLocation());
+                System.out.println(currentPatient.getPatientLocation());
                 currentPatient.sendHelpMessage();
-                alertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
-                                        "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
-                alertDialog.show();
+                messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
+                        "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
+                messageAlertDialog.show();
             }
-            catch (SecurityException e) { }
         }
-        catch (Exception e)
-        {
-            System.out.println("Chances are the carer and patient objects can't be found");
-        }
+        catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
     }
 
-    void fetchLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}
-                        , 10);
-            }
-            return;
+    private Location fetchLocation()
+    {
+        try
+        {
+            myLocManager.requestLocationUpdates("gps", 0, 0, myLocListener);
+            return this.myLocManager.getLastKnownLocation("gps");
         }
-        myLocManager.requestLocationUpdates("gps", 1000, 0, myLocListener);
-        myLocManager.requestLocationUpdates("network", 1000, 0, myLocListener);
-        currentPatient.setPatientLocation(this.myLocManager.getLastKnownLocation("gps"));
+        catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
+        return null;
     }
 
     public String readFile(String actualFilePath) {
@@ -250,21 +262,38 @@ public class PatientHomeActivity extends AppCompatActivity {
         String TAG = "ReadCSV";
         if (Build.VERSION.SDK_INT >= 23) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted");
-                return true;
-            } else {
-
-                Log.v(TAG,"Permission is revoked");
+                    != PackageManager.PERMISSION_GRANTED)
+            {
+                Log.v(TAG,"Read permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
                 return false;
             }
         }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted");
-            return true;
+        //permission is automatically granted on sdk < 23 upon installation
+        Log.v(TAG,"Read permission is granted");
+        return true;
+    }
+
+    private void checkGPSPermissions()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
         }
     }
 
+    private void checkGPSStatus()
+    {
+        if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            gpsAlertDialog.show();
+        }
+    }
 }
+
+
 

@@ -33,7 +33,6 @@ public class Carer extends Account {
 
     public void receiveMessage(HelpMessage receivedMessage) {
         this.theReceivedMessage = receivedMessage;
-        System.out.println("Received");
     }
 
     public HelpMessage getTheReceivedMessage() { return theReceivedMessage; }
