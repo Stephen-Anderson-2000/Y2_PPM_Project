@@ -68,7 +68,7 @@ public class AccelerationData
 
     // Calculates the variance of an array.
     public double calcVariance(ArrayList<Double> givenArray, int startValue, int endValue) {
-        ArrayList<Double> squaredDifferenceArray = new ArrayList<Double>();
+        ArrayList<Double> squaredDifferenceArray = new ArrayList<>();
         double sqDifference;
         double variance;
         double currentValue;
