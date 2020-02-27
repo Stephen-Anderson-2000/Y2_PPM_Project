@@ -15,13 +15,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -34,6 +32,7 @@ public class PatientHomeActivity extends AppCompatActivity
     private Button filePicker;
     private Button carerButton;
     private Button helpButton;
+    private Button calibrateButton;
     private TextView userNameBox;
     private LocationManager myLocManager;
     private LocationListener myLocListener;
@@ -58,15 +57,9 @@ public class PatientHomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
 
-        //GUI Button initialisation and event listener
-        whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
-        filePicker = findViewById(R.id.researchDataButton);
-        carerButton = (Button) findViewById(R.id.patientButton);
-        helpButton = (Button) findViewById(R.id.helpButton);
-        userNameBox = findViewById(R.id.patientNameBox);
-        userNameBox.setText(currentPatient.getFirstName());
 
-        makeButtonListeners();
+
+        makeButtons();
         setupDialogBoxes();
 
         myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -92,8 +85,17 @@ public class PatientHomeActivity extends AppCompatActivity
 
     }
 
-    public void makeButtonListeners()
+    public void makeButtons()
     {
+        //GUI Button initialisation and event listener
+        whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
+        filePicker = findViewById(R.id.researchDataButton);
+        carerButton = (Button) findViewById(R.id.patientButton);
+        helpButton = (Button) findViewById(R.id.helpButton);
+        calibrateButton = (Button) findViewById(R.id.calibrateButton);
+        userNameBox = findViewById(R.id.patientNameBox);
+        userNameBox.setText(currentPatient.getFirstName());
+
         filePicker.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -124,6 +126,14 @@ public class PatientHomeActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 sendHelp();
+            }
+        });
+
+        calibrateButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                // Run code here to start calibration
             }
         });
     }
@@ -209,6 +219,10 @@ public class PatientHomeActivity extends AppCompatActivity
                 messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
                         "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
                 messageAlertDialog.show();
+            }
+            else
+            {
+                checkGPSStatus();
             }
         }
         catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
