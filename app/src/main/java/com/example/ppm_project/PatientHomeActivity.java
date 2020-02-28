@@ -20,6 +20,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -152,10 +154,41 @@ public class PatientHomeActivity extends AppCompatActivity
         gpsAlertDialog.setTitle("Alert");
         gpsAlertDialog.setMessage("The GPS location on your device is currently disabled. Please enable it" +
                 " for full functionality of the app.");
-        gpsAlertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+        gpsAlertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface)
+            {
+                Button okButton = ((AlertDialog) gpsAlertDialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                okButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                });
+                Button closeButton = ((AlertDialog) gpsAlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                closeButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        fetchLocation();
+                        gpsAlertDialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        gpsAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
+            }
+        });
+        gpsAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CLOSE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //dialog.dismiss();
             }
         });
     }
