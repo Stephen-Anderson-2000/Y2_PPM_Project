@@ -40,6 +40,7 @@ public class PatientHomeActivity extends AppCompatActivity
     private LocationListener myLocListener;
     private String actualFilePath = "";
     private String TAG = "PatientHomeActivity";
+    private ArrayList<Double> sArray = new ArrayList<>();
     private ArrayList<Double> xArray = new ArrayList<>();
     private ArrayList<Double> yArray = new ArrayList<>();
     private ArrayList<Double> zArray = new ArrayList<>();
@@ -206,7 +207,7 @@ public class PatientHomeActivity extends AppCompatActivity
 
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 readFile(actualFilePath);
-                accDat.setVals(xArray, yArray, zArray);
+                accDat.setVals(sArray, xArray, yArray, zArray);
 
                 if (accDat.isPatientHavingEpisode()){
                     messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
@@ -283,6 +284,7 @@ public class PatientHomeActivity extends AppCompatActivity
                     while ((row = csvReader.readLine()) != null) {
                         String[] csvData = row.split(",");
 
+                        sArray.add(Double.valueOf(csvData[2]));
                         xArray.add(Double.valueOf(csvData[3]));
                         yArray.add(Double.valueOf(csvData[4]));
                         zArray.add(Double.valueOf(csvData[5]));

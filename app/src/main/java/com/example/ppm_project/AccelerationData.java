@@ -5,53 +5,36 @@ import java.util.ArrayList;
 //This can be done by iterating through each line, parsing the correct
 //part as a double, then using arrayList.add(i).
 
+
 public class AccelerationData
 {
-
+    private ArrayList<Double> sArray = new ArrayList<>();
     private ArrayList<Double> xArray = new ArrayList<>();
     private ArrayList<Double> yArray = new ArrayList<>();
     private ArrayList<Double> zArray = new ArrayList<>();
 
-    public void setVals(ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z){
+    public void setVals(ArrayList<Double> s, ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z){
+        sArray = s;
         xArray = x;
         yArray = y;
         zArray = z;
     }
 
-    public boolean isPatientHavingEpisode()
-    {
-        //System.out.println("X Variance: " + calcVariance(xArray));
-        //System.out.println("Y Variance: " + calcVariance(yArray));
-        //System.out.println("Z Variance: " + calcVariance(zArray));
+    public boolean isPatientHavingEpisode() {
 
-        // Must now compare against a 'threshold' value.
-        // The variance of the data gathered was:
-        // x (NORMAL): 0.0315 (ERRATIC): 0.383
-        // y (NORMAL): 0.127  (ERRATIC): 0.35
-        // z (NORMAL): 0.042  (ERRATIC): 0.213
 
-        // Perhaps somewhere around 0.2 as a minimum threshold for erratic movement?
+        Calibration calTest = new Calibration();
 
-        //0.2 will need to be replaced when calculateThreshold has been implemented
-        if (calcVariance(calculateMagnitude(xArray, yArray, zArray), 0, calculateMagnitude(xArray, yArray, zArray).size()) > 0.2){
-            return true;
-        } else {
-            return false;
+        double thresholdValue = calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)));
+        double[] totalResults = calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray));
+
+        for (int i = 0; i < totalResults.length; i++) {
+            if (totalResults[i] > thresholdValue) {
+                return true;
+            }
         }
+        return false;
     }
-    // Calculates √(x² + y² + z²) so that we're working with a single array.
-    // In theory, this is the magnitude of the vector, showing acceleration in all directions.
-    public ArrayList<Double> calculateMagnitude(ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z) {
-        ArrayList<Double> magnitudeOfAccel = new ArrayList<>();
-
-        for (int i = 0; i < x.size() - 1; i++) {
-            double toBeInserted = Math.sqrt((x.get(i)*x.get(i)) + (y.get(i)*y.get(i)) + (z.get(i)*z.get(i)));
-            magnitudeOfAccel.add(toBeInserted);
-        }
-
-        return(magnitudeOfAccel);
-    }
-
 
     // Calculates the mean of an array by iterating through.
     // Will be needed to calculate variance.

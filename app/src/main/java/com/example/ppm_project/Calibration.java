@@ -1,14 +1,22 @@
 package com.example.ppm_project;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.lang.Math;
 
+
+//This all needs hooking up to the calibrate button in the UI
+//I have no idea how to do that :)))
 public class Calibration {
 
-    public double calculateThreshold(ArrayList<Double> s, ArrayList<Double> magnitudeOfAccel) {
+    //Calculates the threshold value. Finds the 95th percentile and returns it.
+    public double calculateThreshold(ArrayList<Double> s, double[] varianceOfMagnitude) {
 
-        getVarArray(s, magnitudeOfAccel);
+        int sampleSize = varianceOfMagnitude.length;
+        int percentilePosInt = Math.toIntExact(Math.round(0.95*(sampleSize)));
 
-        return(0.0);
+        double percentile = varianceOfMagnitude[percentilePosInt];
+
+        return(percentile);
     }
 
     //Calculates the variance using the calcVariance function found in AccelerationData.java
@@ -60,4 +68,18 @@ public class Calibration {
 
         return (sortedVarArray);
     }
+
+    // Calculates √(x² + y² + z²) so that we're working with a single array.
+    // In theory, this is the magnitude of the vector, showing acceleration in all directions.
+    public ArrayList<Double> calculateMagnitude(ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z) {
+        ArrayList<Double> magnitudeOfAccel = new ArrayList<>();
+
+        for (int i = 0; i < x.size() - 1; i++) {
+            double toBeInserted = Math.sqrt((x.get(i)*x.get(i)) + (y.get(i)*y.get(i)) + (z.get(i)*z.get(i)));
+            magnitudeOfAccel.add(toBeInserted);
+        }
+
+        return(magnitudeOfAccel);
+    }
+
 }
