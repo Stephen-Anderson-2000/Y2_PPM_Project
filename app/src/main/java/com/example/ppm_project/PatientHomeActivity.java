@@ -44,11 +44,13 @@ public class PatientHomeActivity extends AppCompatActivity
     private ArrayList<Double> xArray = new ArrayList<>();
     private ArrayList<Double> yArray = new ArrayList<>();
     private ArrayList<Double> zArray = new ArrayList<>();
+    private double thresholdValue;
     private Boolean fileRead = false;
     AlertDialog messageAlertDialog;
     AlertDialog gpsAlertDialog;
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -136,7 +138,14 @@ public class PatientHomeActivity extends AppCompatActivity
         {
             @Override
             public void onClick(View v) {
-                // Run code here to start calibration
+
+                Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                fileIntent.setType("text/*");
+                startActivityForResult(fileIntent, 15);
+
+
+
+
             }
         });
     }
@@ -209,7 +218,7 @@ public class PatientHomeActivity extends AppCompatActivity
                 readFile(actualFilePath);
                 accDat.setVals(sArray, xArray, yArray, zArray);
 
-                if (accDat.isPatientHavingEpisode()){
+                if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
                     messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
                     messageAlertDialog.show();
                     sendHelp();
@@ -219,6 +228,31 @@ public class PatientHomeActivity extends AppCompatActivity
                 }
             }
             catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
+        }
+        if (requestCode == 15)
+        {
+            try
+            {
+                Uri uri = data.getData();
+                File file = new File(uri.getPath());//create path from uri
+                final String[] split = file.getPath().split(":");//split the path.
+                actualFilePath = split[1];
+
+                Thread.sleep(10000);
+
+                AccelerationData accDat = new AccelerationData();// = analyseFile();
+                readFile(actualFilePath);
+
+                accDat.setVals(sArray, xArray, yArray, zArray);
+                Calibration calTest = new Calibration();
+
+                currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray))));
+                System.out.println(currentPatient.getThresholdValue());
+            }
+            catch (Exception e)
+            {
+
+            }
         }
     }
     

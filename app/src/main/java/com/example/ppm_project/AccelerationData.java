@@ -20,16 +20,18 @@ public class AccelerationData
         zArray = z;
     }
 
-    public boolean isPatientHavingEpisode() {
+    public boolean isPatientHavingEpisode(double threshold) {
 
 
         Calibration calTest = new Calibration();
 
-        double thresholdValue = calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)));
+        //double thresholdValue = calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)));
         double[] totalResults = calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray));
 
+        System.out.println(threshold);
+
         for (int i = 0; i < totalResults.length; i++) {
-            if (totalResults[i] > thresholdValue) {
+            if (totalResults[i] > threshold) {
                 return true;
             }
         }
