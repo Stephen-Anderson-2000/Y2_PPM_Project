@@ -6,12 +6,15 @@ public class Patient extends Account {
     private Location patientLocation;
     private Carer theCarer;
     private boolean isInDistress = false;
+    private double thresholdValue;
 
     public void setPatientLocation(Location patientLocation) { this.patientLocation = patientLocation; }
-    public void setTheCarer(Carer theCarer) { this.theCarer = theCarer; }
+    public void setTheCarer(Carer newCarer) { this.theCarer = newCarer; }
+    public void setThresholdValue(double givenThreshold) {this.thresholdValue = givenThreshold; }
 
     public Location getPatientLocation() { return patientLocation; }
     public Carer getTheCarer() { return theCarer; }
+    public double getThresholdValue() {return thresholdValue; }
 
     public boolean checkInDistress()
     {
@@ -20,13 +23,13 @@ public class Patient extends Account {
         return isInDistress;
     }
 
-    public HelpMessage sendHelpMessage()
+    public void sendHelpMessage()
     {
         HelpMessage newMessage = new HelpMessage();
         newMessage.setSender(this);
         newMessage.setRecipient(theCarer);
         newMessage.setSenderLocation(patientLocation);
-
-        return newMessage;
+        theCarer.receiveMessage(newMessage);
     }
+
 }

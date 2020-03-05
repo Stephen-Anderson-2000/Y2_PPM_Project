@@ -3,10 +3,10 @@
     package="com.example.ppm_project" >
 
     <uses-permission android:name = "android.permission.READ_EXTERNAL_STORAGE"/>
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name = "android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name = "android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name = "android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name = "android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,8 +14,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <activity android:name=".WelcomeActivity">
+        android:theme="@style/AppTheme"
+        android:largeHeap="true"
+        android:hardwareAccelerated="false" >
+
+        <activity android:name=".WelcomeActivity"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +29,8 @@
         <activity android:name=".CarerHomeActivity" ></activity>
         <activity android:name=".PatientHomeActivity" ></activity>
         <activity android:name=".CarerInfoActivity"></activity>
-        <activity android:name=".popUp"></activity>
+        <activity android:name=".whatIsThisPopUpActivity"></activity>
+        <activity android:name=".helpPopUpActivity"></activity>
     </application>
 
 </manifest>

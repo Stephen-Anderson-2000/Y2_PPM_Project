@@ -1,20 +1,39 @@
 package com.example.ppm_project;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class Carer extends Account {
-    Vector<Patient> patientVector;
+    ArrayList<Patient> patientArrayList = new ArrayList<>();
     HelpMessage theReceivedMessage;
 
     public void addPatient(Patient newPatient)
     {
-        // Stub definition. Need to add the passed in patient object to the vector
+        for (Patient aPatient: patientArrayList)
+        {
+            if (aPatient.getUserID() == newPatient.getUserID())
+            {
+                return;
+            }
+        }
+        patientArrayList.add(newPatient);
     }
 
     public void removePatient(Patient oldPatient)
     {
-        // Stub definition. Need to loop through to find and remove the passed in patient object
+        for (Patient aPatient: patientArrayList)
+        {
+            if (aPatient.getUserID() == oldPatient.getUserID())
+            {
+                patientArrayList.remove(oldPatient);
+            }
+        }
     }
 
-    public void receiveMessage(HelpMessage receivedMessage) { this.theReceivedMessage = receivedMessage; }
+    public ArrayList<Patient> getPatientArrayList() { return patientArrayList; }
+
+    public void receiveMessage(HelpMessage receivedMessage) {
+        this.theReceivedMessage = receivedMessage;
+    }
+
+    public HelpMessage getTheReceivedMessage() { return theReceivedMessage; }
 }

@@ -2,7 +2,7 @@ package com.example.ppm_project;
 
 import android.location.Location;
 
-public class HelpMessage {
+public class HelpMessage{
     private Location senderLocation;
     private Carer recipient;
     private Patient sender;
@@ -21,6 +21,7 @@ public class HelpMessage {
 
     public void sendHelpMessage()
     {
-        //
+        recipient.receiveMessage(this);
+
     }
 }
