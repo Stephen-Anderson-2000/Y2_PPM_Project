@@ -1,15 +1,20 @@
 package com.example.ppm_project;
 
+import com.opencsv.CSVReader;
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -21,10 +26,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.net.URI;
 import java.util.ArrayList;
 
 
@@ -38,7 +43,7 @@ public class PatientHomeActivity extends AppCompatActivity
     private TextView userNameBox;
     private LocationManager myLocManager;
     private LocationListener myLocListener;
-    private String actualFilePath = "";
+    //private String actualFilePath = "";
     private String TAG = "PatientHomeActivity";
     private ArrayList<Double> sArray = new ArrayList<>();
     private ArrayList<Double> xArray = new ArrayList<>();
@@ -212,7 +217,7 @@ public class PatientHomeActivity extends AppCompatActivity
                 Uri uri = data.getData();
                 File file = new File(uri.getPath());//create path from uri
                 final String[] split = file.getPath().split(":");//split the path.
-                actualFilePath = split[1];
+                String actualFilePath = split[1];
 
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 readFile(actualFilePath);
@@ -234,14 +239,21 @@ public class PatientHomeActivity extends AppCompatActivity
             try
             {
                 Uri uri = data.getData();
-                File file = new File(uri.getPath());//create path from uri
-                final String[] split = file.getPath().split(":");//split the path.
-                actualFilePath = split[1];
+                String fullFilePath = uri.toString();
+                String[] arrFilePath = fullFilePath.split(":");
+                String filePath = arrFilePath[1];
 
-                Thread.sleep(10000);
+                System.out.println(filePath);
+
+                //filePath = "/com.android.providers.downloads.documents/6726";
+
+                //File file = new File(filePath); // create path from uri
+
+                //final String[] split = file.getPath().split(":");//split the path.
+
+                readFile(filePath);
 
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
-                readFile(actualFilePath);
 
                 accDat.setVals(sArray, xArray, yArray, zArray);
                 Calibration calTest = new Calibration();
@@ -251,7 +263,7 @@ public class PatientHomeActivity extends AppCompatActivity
             }
             catch (Exception e)
             {
-
+                Log.v(TAG, "Caught exception when loading .csv", e);
             }
         }
     }
@@ -307,23 +319,30 @@ public class PatientHomeActivity extends AppCompatActivity
         return null;
     }
 
-    public String readFile(String actualFilePath) {
+    public String readFile(String filePath) {
         StringBuilder allData = new StringBuilder();
         try {
             if (isReadStoragePermissionGranted()) {
                 try {
-                    String row;
-                    BufferedReader csvReader = new BufferedReader(new FileReader(actualFilePath));
-                    csvReader.readLine();
-                    while ((row = csvReader.readLine()) != null) {
-                        String[] csvData = row.split(",");
+                    //File csvfile = new File(filePath);
+                    File csvfile = new File(Environment.getExternalStorageDirectory() + "/Calibrating.csv");
+                    System.out.println("Found file");
+                    CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
+                    //CSVReader reader = new CSVReader(new FileReader(filePath));
+                    System.out.println("CSVReader created");
+                    String[] row;
+                    //BufferedReader csvReader = new BufferedReader(new FileReader(filePath));
+                    //csvReader.readLine();
+                    reader.readNext();
+                    while ((row = reader.readNext()) != null) {
+                        String[] csvData = row;//.split(",");
 
                         sArray.add(Double.valueOf(csvData[2]));
                         xArray.add(Double.valueOf(csvData[3]));
                         yArray.add(Double.valueOf(csvData[4]));
                         zArray.add(Double.valueOf(csvData[5]));
 
-                        for (int i = 3; i < csvData.length; i++) {
+                        for (int i = 2; i < csvData.length; i++) {
                             allData.append(csvData[i]).append("  ");
                         }
                         allData.append("\n");
@@ -376,6 +395,7 @@ public class PatientHomeActivity extends AppCompatActivity
             gpsAlertDialog.show();
         }
     }
+
 }
 
 
