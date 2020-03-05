@@ -11,10 +11,10 @@
     <string name="welcome_title">WELCOME</string>
     <string name="which_are_you_header">WHICH ARE YOU?</string>
     <string name="ok_button">OK</string>
-    <string name="name_header">NAME</string>
     <string name="patient_toggle">PATIENT</string>
     <string name="carer_toggle">CARER</string>
-    <string name="name_box">PLEASE ENTER YOUR NAME HERE..</string>
     <string name="this_is_title">THIS IS</string>
     <string name="carer_details_button">CARER DETAILS</string>
+    <string name="user_id_header">USER ID</string>
+    <string name="default_id_box_value">PLEASE ENTER YOUR USER ID HERE</string>
 </resources>

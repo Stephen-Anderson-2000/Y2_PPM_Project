@@ -5,37 +5,43 @@ import java.util.ArrayList;
 //This can be done by iterating through each line, parsing the correct
 //part as a double, then using arrayList.add(i).
 
+
 public class AccelerationData
 {
-    // Set data as a struct?
-    //accelerationData;
+    private ArrayList<Double> sArray = new ArrayList<>();
+    private ArrayList<Double> xArray = new ArrayList<>();
+    private ArrayList<Double> yArray = new ArrayList<>();
+    private ArrayList<Double> zArray = new ArrayList<>();
 
-    public void setAccelData()
-    {
-        // Stub definition. Need to find a way to fetch the csv file and then turn it into the
-        // acceleration data as well
+    public void setVals(ArrayList<Double> s, ArrayList<Double> x, ArrayList<Double> y, ArrayList<Double> z){
+        sArray = s;
+        xArray = x;
+        yArray = y;
+        zArray = z;
     }
 
-    //public /*type goes here*/ getAccelData() { return accelerationData; }
+    public boolean isPatientHavingEpisode(double threshold) {
 
-    public void analyseData(ArrayList<Double> xArray, ArrayList<Double> yArray, ArrayList<Double> zArray)
-    {
-        calcVariance(xArray);
-        calcVariance(yArray);
-        calcVariance(zArray);
 
-        //Must now compare against a 'threshold' value.
-        //The variance of the data gathered was:
-        //x (NORMAL): 0.0315 (ERRATIC): 0.383
-        //y (NORMAL): 0.127  (ERRATIC): 0.35
-        //z (NORMAL): 0.042  (ERRATIC): 0.213
+        Calibration calTest = new Calibration();
 
-        //Perhaps somewhere around 0.2 as a minimum threshold for erratic movement?
+        //double thresholdValue = calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)));
+        double[] totalResults = calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray));
+
+        String thresh = "Threshold Value: " + threshold;
+        System.out.println(thresh);
+
+        for (int i = 0; i < totalResults.length; i++) {
+            if (totalResults[i] > threshold) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    //Calculates the mean of an array by iterating through.
-    //Will be needed to calculate variance.
-    public double calcArrayMean(ArrayList<Double> givenArray) {
+    // Calculates the mean of an array by iterating through.
+    // Will be needed to calculate variance.
+    public double calcArrayMean(ArrayList<Double> givenArray, int startValue, int endValue) {
         double total = 0;
 
         for (int i = 0; i < givenArray.size(); i++) {
@@ -46,26 +52,26 @@ public class AccelerationData
         return (arrayMean);
     }
 
-    //Calculates the variance of an array.
-    public double calcVariance(ArrayList<Double> givenArray) {
-        ArrayList<Double> squaredDifferenceArray = new ArrayList<Double>();
+    // Calculates the variance of an array.
+    public double calcVariance(ArrayList<Double> givenArray, int startValue, int endValue) {
+        ArrayList<Double> squaredDifferenceArray = new ArrayList<>();
         double sqDifference;
         double variance;
         double currentValue;
 
         //Calculate the mean of the array first
-        double meanOfArray = calcArrayMean(givenArray);
+        double meanOfArray = calcArrayMean(givenArray, startValue, endValue);
 
         //Subtract the mean from each value in the array
         //Square the result
-        for (int i = 0; i < givenArray.size(); i++ ) {
+        for (int i = 0 + startValue; i < endValue; i++ ) {
             currentValue = (givenArray.get(i) - meanOfArray);
             sqDifference = currentValue * currentValue;
             squaredDifferenceArray.add(sqDifference);
         }
 
         //Average of those squared differences = variance
-        variance = calcArrayMean(squaredDifferenceArray);
+        variance = calcArrayMean(squaredDifferenceArray, startValue, endValue);
 
         return (variance);
     }

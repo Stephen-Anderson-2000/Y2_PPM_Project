@@ -3,10 +3,9 @@ package com.example.ppm_project;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-
 import androidx.annotation.Nullable;
 
-public class popUp extends Activity {
+public class whatIsThisPopUpActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
