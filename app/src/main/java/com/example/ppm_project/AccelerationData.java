@@ -28,7 +28,8 @@ public class AccelerationData
         //double thresholdValue = calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)));
         double[] totalResults = calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray));
 
-        System.out.println(threshold);
+        String thresh = "Threshold Value: " + threshold;
+        System.out.println(thresh);
 
         for (int i = 0; i < totalResults.length; i++) {
             if (totalResults[i] > threshold) {
