@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -25,11 +24,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.net.URI;
 import java.util.ArrayList;
 
 
@@ -43,7 +39,6 @@ public class PatientHomeActivity extends AppCompatActivity
     private TextView userNameBox;
     private LocationManager myLocManager;
     private LocationListener myLocListener;
-    //private String actualFilePath = "";
     private String TAG = "PatientHomeActivity";
     private ArrayList<Double> sArray = new ArrayList<>();
     private ArrayList<Double> xArray = new ArrayList<>();
@@ -67,18 +62,13 @@ public class PatientHomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
 
-
-
         makeButtons();
         setupDialogBoxes();
 
         myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         myLocListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location myLocation)
-            {
-                currentPatient.setPatientLocation(fetchLocation());
-            }
+            public void onLocationChanged(Location myLocation) { currentPatient.setPatientLocation(fetchLocation()); }
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) { }
@@ -239,11 +229,20 @@ public class PatientHomeActivity extends AppCompatActivity
             try
             {
                 Uri uri = data.getData();
+                /*
                 String fullFilePath = uri.toString();
                 String[] arrFilePath = fullFilePath.split(":");
                 String filePath = arrFilePath[1];
+                */
+                File csvFile = new File(uri.getPath());
+                csvFile.getAbsolutePath();
 
-                System.out.println(filePath);
+                String fullFilePath = csvFile.getAbsolutePath();
+                String[] arrFilePath = fullFilePath.split(":");
+                String filePath = "/" + arrFilePath[1];
+
+                System.out.println("Absolute path: " + csvFile.getAbsolutePath());
+                System.out.println("Filepath: " + arrFilePath[1]);
 
                 //filePath = "/com.android.providers.downloads.documents/6726";
 
@@ -325,7 +324,7 @@ public class PatientHomeActivity extends AppCompatActivity
             if (isReadStoragePermissionGranted()) {
                 try {
                     //File csvfile = new File(filePath);
-                    File csvfile = new File(Environment.getExternalStorageDirectory() + "/Calibrating.csv");
+                    File csvfile = new File(Environment.getExternalStorageDirectory() + filePath);
                     System.out.println("Found file");
                     CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
                     //CSVReader reader = new CSVReader(new FileReader(filePath));
