@@ -326,7 +326,6 @@ public class PatientHomeActivity extends AppCompatActivity
         return null;
     }
 
-<<<<<<< HEAD
     public String readFile(String fileName) {
         StringBuilder allData = new StringBuilder();
         try {
@@ -354,7 +353,7 @@ public class PatientHomeActivity extends AppCompatActivity
                             allData.append(csvData[i]).append("  ");
                         }
                         allData.append("\n");
-                        fileRead = true;
+                        //fileRead = true;
                     }
 
                 } catch (java.io.IOException s) {
@@ -367,8 +366,6 @@ public class PatientHomeActivity extends AppCompatActivity
             return "";
         }
     }
-=======
->>>>>>> 0a36b0ddf3838d0bde3309a079d7efd4afb8d568
 
     private boolean isReadStoragePermissionGranted() {
         String TAG = "ReadCSV";
