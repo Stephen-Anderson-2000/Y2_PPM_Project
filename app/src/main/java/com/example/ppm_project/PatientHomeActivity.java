@@ -135,7 +135,6 @@ public class PatientHomeActivity extends AppCompatActivity
         {
             @Override
             public void onClick(View v) {
-
                 Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
                 fileIntent.setType("text/*");
                 startActivityForResult(fileIntent, 15);
@@ -158,17 +157,23 @@ public class PatientHomeActivity extends AppCompatActivity
         gpsAlertDialog.setTitle("Alert");
         gpsAlertDialog.setMessage("The GPS location on your device is currently disabled. Please enable it" +
                 " for full functionality of the app.");
-        gpsAlertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        gpsAlertDialog.setOnShowListener(new DialogInterface.OnShowListener()
+        {
             @Override
             public void onShow(DialogInterface dialogInterface)
             {
                 Button okButton = ((AlertDialog) gpsAlertDialog).getButton(AlertDialog.BUTTON_POSITIVE);
+
                 okButton.setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View view)
                     {
-                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                        {
+                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                        else { gpsAlertDialog.dismiss(); }
                     }
                 });
                 Button closeButton = ((AlertDialog) gpsAlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE);
@@ -183,16 +188,13 @@ public class PatientHomeActivity extends AppCompatActivity
                 });
             }
         });
-        gpsAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
+        gpsAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) { }
         });
         gpsAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "CLOSE", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //dialog.dismiss();
-            }
+            public void onClick(DialogInterface dialog, int which) { }
         });
 
 
@@ -395,17 +397,17 @@ public class PatientHomeActivity extends AppCompatActivity
         }
     }
 
-    private void checkGPSStatus()
-    {
-        if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); }
-    }
+    private void checkGPSStatus() { if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); } }
 
 
     private class LoadCSVFiles extends Thread {
 
         public LoadCSVFiles(String _filePath) { filePath = _filePath;; }
 
-        public void run() { readFile(); }
+        public void run()
+        {
+            readFile();
+        }
 
         public String readFile() {
             StringBuilder allData = new StringBuilder();
