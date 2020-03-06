@@ -247,11 +247,12 @@ public class PatientHomeActivity extends AppCompatActivity
 
                 //filePath = "/com.android.providers.downloads.documents/6726";
 
-                //File file = new File(filePath); // create path from uri
+                File file = new File(filePath);
+                readFile(file.getName());// create path from uri
 
                 //final String[] split = file.getPath().split(":");//split the path.
 
-                readFile(filePath);
+                //readFile(filePath);
 
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
 
@@ -319,14 +320,14 @@ public class PatientHomeActivity extends AppCompatActivity
         return null;
     }
 
-    public String readFile(String filePath) {
+    public String readFile(String fileName) {
         StringBuilder allData = new StringBuilder();
         try {
             if (isReadStoragePermissionGranted()) {
                 try {
                     //File csvfile = new File(filePath);
-                    File csvfile = new File(Environment.getExternalStorageDirectory() + "/Calibrating.csv");
-                    System.out.println("Found file");
+                    File csvfile = new File(Environment.getExternalStorageDirectory() + "/Carer App CSV Files/Calibrating.csv");
+                    System.out.println("Found file at " + csvfile.getAbsolutePath());
                     CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
                     //CSVReader reader = new CSVReader(new FileReader(filePath));
                     System.out.println("CSVReader created");
