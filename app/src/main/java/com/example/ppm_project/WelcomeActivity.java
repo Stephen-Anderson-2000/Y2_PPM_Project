@@ -2,11 +2,11 @@ package com.example.ppm_project;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 
@@ -19,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -32,7 +31,7 @@ public class WelcomeActivity extends AppCompatActivity {
    private ToggleButton patientToggle;
    private ToggleButton carerToggle;
    private Button ok;
-   private EditText idBox;
+   private EditText nameBox;
    private SignInButton signInButton;
    private GoogleSignInClient mGoogleSignInClient;
    private FirebaseAuth auth;
@@ -45,7 +44,7 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        makePatientsCarers();
+       // makePatientsCarers();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
@@ -74,14 +73,14 @@ public class WelcomeActivity extends AppCompatActivity {
         patientToggle.setOnCheckedChangeListener(changeChecker);
         carerToggle.setOnCheckedChangeListener(changeChecker);
 
-        idBox = (EditText)findViewById(R.id.idBox);
+        nameBox = (EditText)findViewById(R.id.nameBox);
 
         ok = (Button) findViewById(R.id.okButton);
 
-        ok.setOnClickListener(new View.OnClickListener() {
+  /*        ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
+              try {
                     enteredUserID = Integer.parseInt(idBox.getText().toString());
                 }
                 catch (Exception e)
@@ -103,7 +102,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     //implement pop up to tell user to check if they are a patient or carer and to check their ID
                 }
             }
-        });
+        });*/
     }
 
 
@@ -135,6 +134,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
+                            nameBox.setText(user.toString(), TextView.BufferType.EDITABLE);
 
                         } else {
 
@@ -165,7 +165,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
 
-    private void makePatientsCarers()
+  /*  private void makePatientsCarers()
     {
         Patient patient1 = new Patient();
         patient1.setUserID(1);
@@ -207,7 +207,7 @@ public class WelcomeActivity extends AppCompatActivity {
         theAccounts.addPatientToList(patient4);
 
         System.out.println(carer1.getPatientArrayList().get(1));
-    }
+    } */
 
 
 
