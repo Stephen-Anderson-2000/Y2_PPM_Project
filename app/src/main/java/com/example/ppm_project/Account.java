@@ -9,6 +9,10 @@ public class Account {
     private Boolean isCarer;
     private String profileURL;
 
+    public Account(){
+
+    }
+
     public void setFirstName(String firstName) { this.firstName = firstName; }
 
     public void setLastName(String lastName) { this.lastName = lastName; }
