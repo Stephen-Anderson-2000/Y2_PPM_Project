@@ -1,41 +1,43 @@
 package com.example.ppm_project;
 
-public class Account {
-    private String firstName;
-    private String lastName;
-    private String emailAddress;
-    //private int mobileNumber;
-    private int userID;
-    private Boolean isCarer;
-    private String profileURL;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class Account{
+    private String FirstName;
+    private String LastName;
+    private String EmailAddress;
+    //private int MobileNumber;
+    private String UserID;
+    private Boolean IsCarer;
+    private String ProfileURL;
 
     public Account(){
 
     }
 
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setFirstName(String firstName) { FirstName = firstName; }
 
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setLastName(String lastName) { LastName = lastName; }
 
-    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
+    public void setEmailAddress(String emailAddress) { EmailAddress = emailAddress; }
 
-    //public void setMobileNumber(int mobileNumber) { this.mobileNumber = mobileNumber; }
+    //public void setMobileNumber(int mobileNumber) { MobileNumber = mobileNumber; }
 
-    public void setUserID(int userID) { this.userID = userID; }
+    public void setUserID(String userID) { UserID = userID; }
 
-    public void setIsCarer(Boolean isCarer){this.isCarer = isCarer;}
+    public void setIsCarer(Boolean isCarer){IsCarer = isCarer;}
 
-    public void setProfileURL(String profileURL) { this.profileURL = profileURL; }
+    public void setProfileURL(String profileURL) { ProfileURL = profileURL; }
 
-    public String getFirstName() { return firstName; }
+    public String getFirstName() { return FirstName; }
 
-    public String getLastName() { return lastName; }
+    public String getLastName() { return LastName; }
 
-    public String getEmailAddress() { return emailAddress; }
+    public String getEmailAddress() { return EmailAddress; }
 
-    //public int getMobileNumber() { return mobileNumber; }
+    //public int getMobileNumber() { return MobileNumber; }
 
-    public int getUserID() { return userID; }
+    public String getUserID() { return UserID; }
 
-    public Boolean getIsCarer(){return isCarer;}
+    public Boolean getIsCarer(){return IsCarer;}
 }
