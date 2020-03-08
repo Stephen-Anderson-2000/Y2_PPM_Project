@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
+
 public class WelcomeActivity extends AppCompatActivity {
    private ToggleButton patientToggle;
    private ToggleButton carerToggle;
@@ -41,6 +42,7 @@ public class WelcomeActivity extends AppCompatActivity {
    private GoogleSignInClient mGoogleSignInClient;
    private FirebaseAuth auth;
    private DatabaseReference reff;
+   Account account;
 
 
    public int enteredUserID = -1;
@@ -204,7 +206,7 @@ public class WelcomeActivity extends AppCompatActivity {
             isCarer = false;
         }
 
-        Account account = new Account();
+        account = new Account();
         account.setFirstName(firstName);
         account.setLastName(lastName);
         account.setEmailAddress(email);
