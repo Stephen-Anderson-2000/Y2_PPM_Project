@@ -33,6 +33,7 @@ public class WelcomeActivity extends AppCompatActivity {
    private ToggleButton carerToggle;
    private Button ok;
    private EditText nameBox;
+   private EditText emailBox;
    private SignInButton signInButton;
    private GoogleSignInClient mGoogleSignInClient;
    private FirebaseAuth auth;
@@ -75,6 +76,7 @@ public class WelcomeActivity extends AppCompatActivity {
         carerToggle.setOnCheckedChangeListener(changeChecker);
 
         nameBox = (EditText)findViewById(R.id.nameBox);
+        emailBox = (EditText)findViewById(R.id.userEmailBox);
 
         ok = (Button) findViewById(R.id.okButton);
 
@@ -142,6 +144,8 @@ public class WelcomeActivity extends AppCompatActivity {
     private void setCredentials(GoogleSignInAccount account){
 
         nameBox.setText(account.getGivenName());
+        emailBox.setText(account.getEmail());
+
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
