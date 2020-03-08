@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
@@ -117,11 +118,30 @@ public class WelcomeActivity extends AppCompatActivity {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
+                handleSignInResult(task);
+
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 // ...
             }
+
+
         }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask){
+        try{
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            setCredentials(account);
+        } catch(ApiException e){
+
+        }
+    }
+
+    private void setCredentials(GoogleSignInAccount account){
+
+        nameBox.setText(account.getGivenName());
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -134,7 +154,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
-                            nameBox.setText(user.toString(), TextView.BufferType.EDITABLE);
+
 
                         } else {
 
