@@ -27,6 +27,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 
 public class WelcomeActivity extends AppCompatActivity {
    private ToggleButton patientToggle;
@@ -37,6 +40,7 @@ public class WelcomeActivity extends AppCompatActivity {
    private SignInButton signInButton;
    private GoogleSignInClient mGoogleSignInClient;
    private FirebaseAuth auth;
+   private DatabaseReference reff;
 
 
    public int enteredUserID = -1;
@@ -80,32 +84,25 @@ public class WelcomeActivity extends AppCompatActivity {
 
         ok = (Button) findViewById(R.id.okButton);
 
-  /*        ok.setOnClickListener(new View.OnClickListener() {
+
+
+        ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
               try {
-                    enteredUserID = Integer.parseInt(idBox.getText().toString());
+                  if(carerToggle.isChecked() || patientToggle.isChecked()){
+                      createAccount();
+                  }
+                   else{
+                       Toast.makeText(getApplicationContext(), "Please select if you are a carer or patient and try again", Toast.LENGTH_SHORT);
+                  }
                 }
                 catch (Exception e)
                 {
-                    System.out.println("Couldn't parse the ID box input to an integer");
-                }
-                if(carerToggle.isChecked() && theAccounts.getCarerByID(enteredUserID) != null)
-                {
-                    currentUserID.setTheUser(enteredUserID);
-                    openCarerHomeActivity();
-                }
-                else if(patientToggle.isChecked() && theAccounts.getPatientByID(enteredUserID) != null)
-                {
-                    currentUserID.setTheUser(enteredUserID);
-                    openPatientHomeActivity();
-                }
-                else
-                {
-                    //implement pop up to tell user to check if they are a patient or carer and to check their ID
+
                 }
             }
-        });*/
+        });
     }
 
 
@@ -188,50 +185,39 @@ public class WelcomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void createAccount(){
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        reff = FirebaseDatabase.getInstance().getReference().child("users");
 
-  /*  private void makePatientsCarers()
-    {
-        Patient patient1 = new Patient();
-        patient1.setUserID(1);
-        patient1.setFirstName("Stephen");
 
-        Carer carer1 = new Carer();
-        carer1.setUserID(2);
-        carer1.setFirstName("Richard");
+        int ID = Integer.parseInt(acct.getId().trim());
+        String firstName = nameBox.getText().toString().trim();
+        String lastName = acct.getFamilyName().trim();
+        String email = emailBox.getText().toString().trim();
+        String profileURL = acct.getPhotoUrl().toString().trim();
+        boolean isCarer;
 
-        Patient patient2 = new Patient();
-        patient2.setUserID(3);
-        patient2.setFirstName("Irena");
+        if(carerToggle.isChecked()){
+            isCarer = true;
+        }
+        else{
+            isCarer = false;
+        }
 
-        Patient patient3 = new Patient();
-        patient3.setUserID(4);
-        patient3.setFirstName("Sam");
+        Account account = new Account();
+        account.setFirstName(firstName);
+        account.setLastName(lastName);
+        account.setEmailAddress(email);
+        account.setIsCarer(isCarer);
+        account.setProfileURL(profileURL);
+        account.setUserID(ID);
 
-        Carer carer2 = new Carer();
-        carer2.setUserID(5);
-        carer2.setFirstName("Nathan");
+        reff.push().setValue(account);
 
-        Patient patient4 = new Patient();
-        patient4.setUserID(6);
-        patient4.setFirstName("Emerson");
 
-        carer1.addPatient(patient1);
-        carer1.addPatient(patient2);
-        carer2.addPatient(patient3);
 
-        patient1.setTheCarer(carer1);
-        patient2.setTheCarer(carer1);
-        patient3.setTheCarer(carer2);
 
-        theAccounts.addCarerToList(carer1);
-        theAccounts.addPatientToList(patient1);
-        theAccounts.addPatientToList(patient2);
-        theAccounts.addCarerToList(carer2);
-        theAccounts.addPatientToList(patient3);
-        theAccounts.addPatientToList(patient4);
-
-        System.out.println(carer1.getPatientArrayList().get(1));
-    } */
+    }
 
 
 

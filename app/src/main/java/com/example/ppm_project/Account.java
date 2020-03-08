@@ -4,8 +4,10 @@ public class Account {
     private String firstName;
     private String lastName;
     private String emailAddress;
-    private int mobileNumber;
+    //private int mobileNumber;
     private int userID;
+    private Boolean isCarer;
+    private String profileURL;
 
     public void setFirstName(String firstName) { this.firstName = firstName; }
 
@@ -13,9 +15,13 @@ public class Account {
 
     public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
 
-    public void setMobileNumber(int mobileNumber) { this.mobileNumber = mobileNumber; }
+    //public void setMobileNumber(int mobileNumber) { this.mobileNumber = mobileNumber; }
 
     public void setUserID(int userID) { this.userID = userID; }
+
+    public void setIsCarer(Boolean isCarer){this.isCarer = isCarer;}
+
+    public void setProfileURL(String profileURL) { this.profileURL = profileURL; }
 
     public String getFirstName() { return firstName; }
 
@@ -23,7 +29,9 @@ public class Account {
 
     public String getEmailAddress() { return emailAddress; }
 
-    public int getMobileNumber() { return mobileNumber; }
+    //public int getMobileNumber() { return mobileNumber; }
 
     public int getUserID() { return userID; }
+
+    public Boolean getIsCarer(){return isCarer;}
 }
