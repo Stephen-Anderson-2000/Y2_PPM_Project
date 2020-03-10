@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -45,10 +46,10 @@ public class PatientHomeActivity extends AppCompatActivity
     private ArrayList<Double> xArray = new ArrayList<>();
     private ArrayList<Double> yArray = new ArrayList<>();
     private ArrayList<Double> zArray = new ArrayList<>();
-    private double thresholdValue;
-    protected String filePath = "";
+    protected boolean calibrating = false;
     AlertDialog messageAlertDialog;
     AlertDialog gpsAlertDialog;
+    AlertDialog loadingFileDialog;
     AlertDialog calibrationDialog;
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
@@ -197,11 +198,17 @@ public class PatientHomeActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) { }
         });
 
+        loadingFileDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
+        loadingFileDialog.setTitle("Loading");
+        loadingFileDialog.setMessage("Loading the file. Please wait.");
+        loadingFileDialog.setCancelable(false);
 
         calibrationDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
-        calibrationDialog.setTitle("Calibrating from file");
-        calibrationDialog.setMessage("Please wait for the calibration to finish");
-        calibrationDialog.setCancelable(false);
+        calibrationDialog.setTitle("Calibrated");
+        calibrationDialog.setButton(calibrationDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) { }
+        });
     }
 
     @Override
@@ -210,23 +217,8 @@ public class PatientHomeActivity extends AppCompatActivity
         if (requestCode == 10) {
             try
             {
-                Uri uri = data.getData();
-                File file = new File(uri.getPath());//create path from uri
-                final String[] split = file.getPath().split(":");//split the path.
-                String actualFilePath = split[1];
-
-                AccelerationData accDat = new AccelerationData();// = analyseFile();
-                //readFile(actualFilePath);
-                accDat.setVals(sArray, xArray, yArray, zArray);
-
-                if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
-                    messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
-                    messageAlertDialog.show();
-                    sendHelp();
-                } else {
-                    messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
-                    messageAlertDialog.show();
-                }
+                loadingFileDialog.show();
+                new LoadCSVFile().execute(findFilePath(data));
             }
             catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
@@ -234,48 +226,25 @@ public class PatientHomeActivity extends AppCompatActivity
         {
             try
             {
-                Uri uri = data.getData();
-                File csvFile = new File(uri.getPath());
-                csvFile.getAbsolutePath();
-
-                String fullFilePath = csvFile.getAbsolutePath();
-                String[] arrFilePath = fullFilePath.split(":");
-                filePath = "/" + arrFilePath[1];
-
-                System.out.println("Absolute path: " + csvFile.getAbsolutePath());
-                System.out.println("Filepath: " + arrFilePath[1]);
-
-                Intent returnIntent = getIntent();
-                returnIntent.putExtra("Result", 1);
-                setResult(Activity.RESULT_OK);
+                calibrating = true;
+                loadingFileDialog.show();
+                new LoadCSVFile().execute(findFilePath(data));
             }
-            catch (Exception e) { Log.v(TAG, "Caught exception when loading .csv", e); }
+            catch (Exception e) { Log.v(TAG, "Caught exception when loading .csv", e); calibrating = false; }
             }
-        if (resultCode == RESULT_OK)
-        {
-            System.out.println("On Activity Result. Result code: " + resultCode);
-            Thread calibrationThread = new Thread(new LoadCSVFiles(filePath));
-            calibrationThread.start();
-            calibrationDialog.show();
-
-            boolean threadAlive = true;
-            while(threadAlive)
-            {
-                if (calibrationThread.getState() == Thread.State.TERMINATED)
-                {
-                    threadAlive = false;
-                    calibrationDialog.dismiss();
-                }
-            }
-            AccelerationData accDat = new AccelerationData();// = analyseFile();
-
-            accDat.setVals(sArray, xArray, yArray, zArray);
-            Calibration calTest = new Calibration();
-
-            currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray))));
-            System.out.println(currentPatient.getThresholdValue());
-        }
     }
+
+    private String findFilePath(@Nullable Intent data)
+    {
+        Uri uri = data.getData();
+        File csvFile = new File(uri.getPath());
+        csvFile.getAbsolutePath();
+
+        String fullFilePath = csvFile.getAbsolutePath();
+        String[] arrFilePath = fullFilePath.split(":");
+        return "/" + arrFilePath[1];
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
@@ -333,15 +302,13 @@ public class PatientHomeActivity extends AppCompatActivity
         try {
             if (isReadStoragePermissionGranted()) {
                 try {
-                    //File csvfile = new File(filePath);
                     File csvfile = new File(Environment.getExternalStorageDirectory() + "/Carer App CSV Files/Calibrating.csv");
                     System.out.println("Found file at " + csvfile.getAbsolutePath());
                     CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
-                    //CSVReader reader = new CSVReader(new FileReader(filePath));
+
                     System.out.println("CSVReader created");
                     String[] row;
-                    //BufferedReader csvReader = new BufferedReader(new FileReader(filePath));
-                    //csvReader.readLine();
+
                     reader.readNext();
                     while ((row = reader.readNext()) != null) {
                         String[] csvData = row;//.split(",");
@@ -355,7 +322,6 @@ public class PatientHomeActivity extends AppCompatActivity
                             allData.append(csvData[i]).append("  ");
                         }
                         allData.append("\n");
-                        //fileRead = true;
                     }
 
                 } catch (java.io.IOException s) {
@@ -400,27 +366,31 @@ public class PatientHomeActivity extends AppCompatActivity
     private void checkGPSStatus() { if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); } }
 
 
-    private class LoadCSVFiles extends Thread {
-
-        public LoadCSVFiles(String _filePath) { filePath = _filePath;; }
-
-        public void run()
+    private class LoadCSVFile extends AsyncTask<String, Void, String> {
+        String TAG = "LoadCSVFiles Class";
+/*
+        @Override
+        protected void onPreExecute()
         {
-            readFile();
+            loadingFileDialog.show();
+        }
+*/
+        @Override
+        protected String doInBackground(String... theFilePath)
+        {
+            readFile(theFilePath[0]);
+            return "Data read";
         }
 
-        public String readFile() {
+        private void readFile(String filePath) {
             StringBuilder allData = new StringBuilder();
             try {
                 if (isReadStoragePermissionGranted() && filePath != "") {
                     try {
-                        //File csvfile = new File(filePath);
-                        File csvfile = new File(Environment.getExternalStorageDirectory() + filePath);
-                        CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
-                        //CSVReader reader = new CSVReader(new FileReader(filePath));
+                        CSVReader reader = new CSVReader(new FileReader(Environment.getExternalStorageDirectory() + filePath));
+
                         String[] row;
-                        //BufferedReader csvReader = new BufferedReader(new FileReader(filePath));
-                        //csvReader.readLine();
+
                         reader.readNext();
                         while ((row = reader.readNext()) != null) {
                             String[] csvData = row;//.split(",");
@@ -429,26 +399,54 @@ public class PatientHomeActivity extends AppCompatActivity
                             xArray.add(Double.valueOf(csvData[3]));
                             yArray.add(Double.valueOf(csvData[4]));
                             zArray.add(Double.valueOf(csvData[5]));
-
-                            for (int i = 2; i < csvData.length; i++) {
-                                allData.append(csvData[i]).append("  ");
-                            }
-                            allData.append("\n");
                         }
 
                     } catch (java.io.IOException s) {
                         System.out.println(s.getMessage());
                     }
                 }
-                return allData.toString();
             } catch (Exception e) {
-                System.out.println("Caught exception: " + e);
-                return "";
+                Log.v(TAG, "Caught exception in readFile()", e);
             }
+        }
+
+        @Override
+        protected void onPostExecute(String resultMsg)
+        {
+            AccelerationData accDat = new AccelerationData();// = analyseFile();
+            accDat.setVals(sArray, xArray, yArray, zArray);
+
+            if (calibrating)
+            {
+                Calibration calTest = new Calibration();
+
+                currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray))));
+                System.out.println("The new threshold: " + currentPatient.getThresholdValue());
+
+                loadingFileDialog.hide();
+
+                calibrationDialog.setMessage("Calibration Complete! \nThreshold value: " + currentPatient.getThresholdValue());
+                calibrationDialog.show();
+                calibrating = false;
+            }
+            else
+            {
+                loadingFileDialog.hide();
+                if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
+                    messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                    messageAlertDialog.show();
+                    sendHelp();
+                } else {
+                    messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
+                    messageAlertDialog.show();
+                }
+            }
+            sArray.clear();
+            xArray.clear();
+            yArray.clear();
+            zArray.clear();
         }
     }
 
 }
-
-
 
