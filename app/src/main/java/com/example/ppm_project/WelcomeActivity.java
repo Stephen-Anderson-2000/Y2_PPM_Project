@@ -2,6 +2,7 @@ package com.example.ppm_project;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -32,10 +33,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 
 public class WelcomeActivity extends AppCompatActivity {
-   private ToggleButton patientToggle;
+    private static final String TAG = "WelcomeActivity";
+    private ToggleButton patientToggle;
    private ToggleButton carerToggle;
    private Button ok;
    private EditText nameBox;
@@ -120,6 +124,25 @@ public class WelcomeActivity extends AppCompatActivity {
                 {
 
                 }
+            }
+        });
+
+        // Get the current FCM Token of this device
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if (!task.isSuccessful()) {
+                    Log.w(TAG, "getInstanceId failed", task.getException());
+                    return;
+                }
+
+                // Get new Instance ID token
+                String token = task.getResult().getToken();
+
+                // Log and toast
+                String msg = "FCM Token: " + token;
+                Log.d(TAG, msg);
+                Toast.makeText(WelcomeActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
