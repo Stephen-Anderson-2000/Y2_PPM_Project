@@ -231,7 +231,7 @@ public class PatientHomeActivity extends AppCompatActivity
                 new LoadCSVFile().execute(findFilePath(data));
             }
             catch (Exception e) { Log.v(TAG, "Caught exception when loading .csv", e); calibrating = false; }
-            }
+        }
     }
 
     private String findFilePath(@Nullable Intent data)
@@ -368,13 +368,13 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
         String TAG = "LoadCSVFiles Class";
-/*
-        @Override
-        protected void onPreExecute()
-        {
-            loadingFileDialog.show();
-        }
-*/
+        /*
+                @Override
+                protected void onPreExecute()
+                {
+                    loadingFileDialog.show();
+                }
+        */
         @Override
         protected String doInBackground(String... theFilePath)
         {
@@ -420,7 +420,7 @@ public class PatientHomeActivity extends AppCompatActivity
             {
                 Calibration calTest = new Calibration();
 
-                currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray))));
+                currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.sortVarArray(calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)))));
                 System.out.println("The new threshold: " + currentPatient.getThresholdValue());
 
                 loadingFileDialog.hide();

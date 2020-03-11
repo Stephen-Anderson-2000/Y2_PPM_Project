@@ -22,7 +22,7 @@ public class Calibration {
     //Calculates the variance using the calcVariance function found in AccelerationData.java
     //Variance is calculated every ten seconds, and then added to a variance array.
     //We will take the 95th percentile from this array.
-    public double[] getVarArray (ArrayList<Double> s, ArrayList<Double> magnitudeOfAccel) {
+    public ArrayList<Double> getVarArray (ArrayList<Double> s, ArrayList<Double> magnitudeOfAccel) {
         int lastStop = 0;
         int nextStop = 10;
         ArrayList<Double> variances = new ArrayList<>();
@@ -43,7 +43,6 @@ public class Calibration {
                 int maxIndex = (magnitudeOfAccel.size() - (magnitudeOfAccel.size() % 1000)) / 100;
 
                 if (nextStop < maxIndex) {
-                    System.out.println(nextStop);
                     variances.add(varCalculator.calcVariance(magnitudeOfAccel, lastStop * 100, nextStop * 100));
                 }
             }
@@ -55,7 +54,7 @@ public class Calibration {
 
         System.out.println(variances);
 
-        return(sortVarArray(variances));
+        return(variances);
     }
 
     // Sorts the array from the getVarArray function in ascending order.
