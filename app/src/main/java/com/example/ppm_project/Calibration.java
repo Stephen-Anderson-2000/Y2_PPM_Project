@@ -40,8 +40,11 @@ public class Calibration {
                 nextStop = nextStop + 10;
                 lastStop = lastStop + 10;
 
-                if (nextStop < magnitudeOfAccel.size()) {
-                    variances.add(varCalculator.calcVariance(magnitudeOfAccel, lastStop, nextStop));
+                int maxIndex = (magnitudeOfAccel.size() - (magnitudeOfAccel.size() % 1000)) / 100;
+
+                if (nextStop < maxIndex) {
+                    System.out.println(nextStop);
+                    variances.add(varCalculator.calcVariance(magnitudeOfAccel, lastStop * 100, nextStop * 100));
                 }
             }
 
@@ -75,11 +78,13 @@ public class Calibration {
         ArrayList<Double> magnitudeOfAccel = new ArrayList<>();
 
         for (int i = 0; i < x.size() - 1; i++) {
-            double toBeInserted = Math.sqrt((x.get(i)*x.get(i)) + (y.get(i)*y.get(i)) + (z.get(i)*z.get(i)));
+            double toBeInserted = Math.sqrt((x.get(i) * x.get(i)) + (y.get(i) * y.get(i)) + (z.get(i) * z.get(i)));
             magnitudeOfAccel.add(toBeInserted);
         }
 
         return(magnitudeOfAccel);
     }
+
+
 
 }

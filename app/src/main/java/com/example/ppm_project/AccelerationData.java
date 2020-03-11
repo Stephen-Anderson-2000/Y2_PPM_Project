@@ -27,12 +27,14 @@ public class AccelerationData
 
         //double thresholdValue = calTest.calculateThreshold(sArray, calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)));
         double[] totalResults = calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray));
-
+        //System.out.println(totalResults);
+        //System.out.println(calTest.calculateMagnitude(xArray, yArray, zArray));
         String thresh = "Threshold Value: " + threshold;
         System.out.println(thresh);
 
         for (int i = 0; i < totalResults.length; i++) {
             if (totalResults[i] > threshold) {
+                System.out.println(totalResults[i]);
                 return true;
             }
         }
@@ -43,8 +45,7 @@ public class AccelerationData
     // Will be needed to calculate variance.
     public double calcArrayMean(ArrayList<Double> givenArray, int startValue, int endValue) {
         double total = 0;
-
-        for (int i = 0; i < givenArray.size(); i++) {
+        for (int i = startValue; i < endValue ; i++) {
             total = total + givenArray.get(i);
         }
 
@@ -61,17 +62,16 @@ public class AccelerationData
 
         //Calculate the mean of the array first
         double meanOfArray = calcArrayMean(givenArray, startValue, endValue);
-
         //Subtract the mean from each value in the array
         //Square the result
-        for (int i = 0 + startValue; i < endValue; i++ ) {
+        for (int i = startValue; i < endValue; i++ ) {
             currentValue = (givenArray.get(i) - meanOfArray);
             sqDifference = currentValue * currentValue;
             squaredDifferenceArray.add(sqDifference);
         }
 
         //Average of those squared differences = variance
-        variance = calcArrayMean(squaredDifferenceArray, startValue, endValue);
+        variance = calcArrayMean(squaredDifferenceArray, 0, squaredDifferenceArray.size());
 
         return (variance);
     }
