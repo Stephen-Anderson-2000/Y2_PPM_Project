@@ -32,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -173,8 +174,27 @@ public class WelcomeActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask){
         try{
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            //TODO
+            //if user already exists in database, then log them in to the correct home screen. else set the credentials automatically
+            String userID= account.getId();
+            reff = FirebaseDatabase.getInstance().getReference("account");
+            Query firebaseUserID = reff.orderByChild("userID").equalTo(userID).limitToFirst(1);
+            if(firebaseUserID.equals(userID)){
+                Query firebaseIsCarer = reff.child("isCarer").orderByChild("userID").equalTo(userID);
+                if (firebaseIsCarer.equals(true)) {
+                    openCarerHomeActivity();
+                }
+                else{
+                    openPatientHomeActivity();
+                }
+            }
+            else{
+                setCredentials(account);
+            }
 
-            setCredentials(account);
+
+
+
         } catch(ApiException e){
 
         }
