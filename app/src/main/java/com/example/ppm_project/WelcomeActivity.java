@@ -95,24 +95,11 @@ public class WelcomeActivity extends AppCompatActivity {
         ok = (Button) findViewById(R.id.okButton);
 
         reff = FirebaseDatabase.getInstance().getReference().child("account");
-        reff.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    maxid = (dataSnapshot.getChildrenCount());
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createAccount();
               try {
                   if(carerToggle.isChecked() || patientToggle.isChecked()){
                       createAccount();
@@ -173,24 +160,51 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask){
         try{
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            final GoogleSignInAccount acct = completedTask.getResult(ApiException.class);
             //TODO
             //if user already exists in database, then log them in to the correct home screen. else set the credentials automatically
-            String userID= account.getId();
+            final String userID= acct.getId();
             reff = FirebaseDatabase.getInstance().getReference("account");
-            Query firebaseUserID = reff.orderByChild("userID").equalTo(userID).limitToFirst(1);
-            if(firebaseUserID.equals(userID)){
-                Query firebaseIsCarer = reff.child("isCarer").orderByChild("userID").equalTo(userID);
-                if (firebaseIsCarer.equals(true)) {
-                    openCarerHomeActivity();
+            final Query query = reff.orderByChild(userID).limitToFirst(1);
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    String firebaseUserID = dataSnapshot.child(userID).child("userID").getValue().toString();
+                    System.out.println(firebaseUserID);
+                    if(firebaseUserID.equals(userID)){
+                        reff = FirebaseDatabase.getInstance().getReference("account").child(userID);
+                        reff.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
+                                System.out.println(firebaseIsCarer);
+                                if (firebaseIsCarer == "true") {
+                                    openCarerHomeActivity();
+                                }
+                                else{
+                                    openPatientHomeActivity();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+                    }
+                    else{
+                        setCredentials();
+                    }
                 }
-                else{
-                    openPatientHomeActivity();
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
                 }
-            }
-            else{
-                setCredentials(account);
-            }
+            });
+
 
 
 
@@ -200,8 +214,9 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    private void setCredentials(GoogleSignInAccount account){
 
+    private void setCredentials(){
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         nameBox.setText(account.getGivenName());
         emailBox.setText(account.getEmail());
 
@@ -273,9 +288,15 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setUserID(ID);
 
         Toast.makeText(getApplicationContext(), account.toString(), Toast.LENGTH_LONG);
-        reff.child(String.valueOf(maxid + 1)).setValue(account);
+        reff.child(account.getUserID()).setValue(account);
 
 
+        if(isCarer){
+            openCarerHomeActivity();
+        }
+        else{
+            openPatientHomeActivity();
+        }
 
 
     }
