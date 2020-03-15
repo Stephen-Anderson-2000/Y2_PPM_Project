@@ -175,35 +175,36 @@ public class WelcomeActivity extends AppCompatActivity {
             query.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String firebaseUserID = dataSnapshot.child(userID).child("userID").getValue().toString();
-                    System.out.println(firebaseUserID);
-                    if (firebaseUserID.equals(userID)) {
-                        reff = FirebaseDatabase.getInstance().getReference("account").child(userID);
-                        reff.addValueEventListener(new ValueEventListener() {
-                            @RequiresApi(api = Build.VERSION_CODES.M)
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
-                                System.out.println(firebaseIsCarer);
-                                if (firebaseIsCarer == "true") {
-                                    setAccountDetails(true, acct);
-                                    openCarerHomeActivity();
-                                } else {
-                                    setAccountDetails(false, acct);
-                                    openPatientHomeActivity();
+                    if(dataSnapshot.child(userID).exists()) {
+                        String firebaseUserID = dataSnapshot.child(userID).child("userID").getValue().toString();
+                        if (firebaseUserID.equals(userID)) {
+                            reff = FirebaseDatabase.getInstance().getReference("account").child(userID);
+                            reff.addValueEventListener(new ValueEventListener() {
+                                @RequiresApi(api = Build.VERSION_CODES.M)
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
+                                    if (firebaseIsCarer == "true") {
+                                        setAccountDetails(true, acct);
+                                        openCarerHomeActivity();
+                                    } else {
+                                        setAccountDetails(false, acct);
+                                        openPatientHomeActivity();
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        });
+                                }
+                            });
 
 
-                    } else {
-                        setCredentials();
-                    }
+                        }
+                    }else {
+                            setCredentials();
+                        }
+
                 }
 
                 @Override
