@@ -1,29 +1,49 @@
 package com.example.ppm_project;
 
-public class Account {
-    private String firstName;
-    private String lastName;
-    private String emailAddress;
-    private int mobileNumber;
-    private int userID;
+import androidx.appcompat.app.AppCompatActivity;
 
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+public class Account{
+    private String FirstName;
+    private String LastName;
+    private String EmailAddress;
+    private String MobileNumber;
+    private String UserID;
+    private Boolean IsCarer;
+    private String ProfileURL;
+    private String CloudID;
 
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public Account(){
 
-    public void setEmailAddress(String emailAddress) { this.emailAddress = emailAddress; }
+    }
 
-    public void setMobileNumber(int mobileNumber) { this.mobileNumber = mobileNumber; }
+    public void setFirstName(String firstName) { FirstName = firstName; }
 
-    public void setUserID(int userID) { this.userID = userID; }
+    public void setLastName(String lastName) { LastName = lastName; }
 
-    public String getFirstName() { return firstName; }
+    public void setEmailAddress(String emailAddress) { EmailAddress = emailAddress; }
 
-    public String getLastName() { return lastName; }
+    public void setMobileNumber(String mobileNumber) { MobileNumber = mobileNumber; }
 
-    public String getEmailAddress() { return emailAddress; }
+    public void setUserID(String userID) { UserID = userID; }
 
-    public int getMobileNumber() { return mobileNumber; }
+    public void setIsCarer(Boolean isCarer){IsCarer = isCarer;}
 
-    public int getUserID() { return userID; }
+    public void setProfileURL(String profileURL) { ProfileURL = profileURL; }
+
+    public void setCloudID(String cloudID){CloudID = cloudID;}
+
+    public String getFirstName() { return FirstName; }
+
+    public String getLastName() { return LastName; }
+
+    public String getEmailAddress() { return EmailAddress; }
+
+    public String getMobileNumber() { return MobileNumber; }
+
+    public String getUserID() { return UserID; }
+
+    public Boolean getIsCarer(){return IsCarer;}
+
+    public String getCloudID(){return CloudID;};
+
 }

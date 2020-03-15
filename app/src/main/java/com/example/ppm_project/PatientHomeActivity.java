@@ -52,6 +52,7 @@ public class PatientHomeActivity extends AppCompatActivity
     AlertDialog calibrationDialog;
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
+    private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
 
 
     @Override
@@ -96,7 +97,7 @@ public class PatientHomeActivity extends AppCompatActivity
         helpButton = (Button) findViewById(R.id.helpButton);
         calibrateButton = (Button) findViewById(R.id.calibrateButton);
         userNameBox = findViewById(R.id.patientNameBox);
-        userNameBox.setText(currentPatient.getFirstName());
+        userNameBox.setText(CurrentAccount.getFirstName());
 
         filePicker.setOnClickListener(new View.OnClickListener()
         {

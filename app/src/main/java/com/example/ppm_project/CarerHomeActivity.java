@@ -18,6 +18,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.database.DatabaseReference;
+
 import org.json.JSONObject;
 import java.io.*;
 import java.net.URL;
@@ -28,9 +33,8 @@ public class CarerHomeActivity extends AppCompatActivity {
     public String  actualFilePath="";
 
     String TAG = "CarerHomeActivity";
-
+Carer currentCarer;
     AccountList theAccounts = new AccountList();
-    Carer currentCarer;
 
     TextView textPath;
     Button filePicker;
@@ -40,6 +44,7 @@ public class CarerHomeActivity extends AppCompatActivity {
     private ArrayList<Double> zArray = new ArrayList<>();
     private Boolean fileRead = false;
     private TextView carerNameBox;
+    private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +55,7 @@ public class CarerHomeActivity extends AppCompatActivity {
         textPath = findViewById(R.id.filePath); //TEMP
         carerNameBox = findViewById(R.id.carerNameBox);
         filePicker = findViewById(R.id.researchDataButton);
-
+        getCurrentUser();
         filePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,17 +75,17 @@ public class CarerHomeActivity extends AppCompatActivity {
             }
         });
 
-        CurrentUserID currentUserID = new CurrentUserID();
-        currentCarer = theAccounts.getCarerByID(currentUserID.getTheUser());
 
-        carerNameBox.setText(currentCarer.getFirstName());
+        carerNameBox.setText(CurrentAccount.getFirstName());
 
-        Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
+   /*     Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
         checkReceivedThread.start();
 
         if (currentCarer.theReceivedMessage != null) {
             displayMessageResultsDialog();
         }
+*/
+
     }
 
     @Override
@@ -281,6 +286,10 @@ public class CarerHomeActivity extends AppCompatActivity {
                 startActivity(mapIntent);
             }
         }
+    }
+
+    private void getCurrentUser(){
+
     }
 
 
