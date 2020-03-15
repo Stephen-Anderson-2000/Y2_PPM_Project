@@ -1,19 +1,25 @@
 package com.example.ppm_project;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -40,32 +46,37 @@ import com.google.firebase.iid.InstanceIdResult;
 
 public class WelcomeActivity extends AppCompatActivity {
     private static final String TAG = "WelcomeActivity";
+    private static String READ_SMS;
+    private static String READ_PHONE_STATE;
+    private static String READ_PHONE_NUMBERS;
     private ToggleButton patientToggle;
-   private ToggleButton carerToggle;
-   private Button ok;
-   private EditText nameBox;
-   private EditText emailBox;
-   private SignInButton signInButton;
-   private GoogleSignInClient mGoogleSignInClient;
-   private FirebaseAuth auth;
-   private DatabaseReference reff;
-   Account account;
-   private long maxid = 0;
+    private ToggleButton carerToggle;
+    private Button ok;
+    private EditText nameBox;
+    private EditText emailBox;
+    private SignInButton signInButton;
+    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseAuth auth;
+    private DatabaseReference reff;
+    private static Account account;
+    private long maxid = 0;
 
 
-   public int enteredUserID = -1;
-   public AccountList theAccounts = new AccountList();
-   CurrentUserID currentUserID = new CurrentUserID();
+    public int enteredUserID = -1;
+    public AccountList theAccounts = new AccountList();
+    CurrentUserID currentUserID = new CurrentUserID();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-       // makePatientsCarers();
+        // makePatientsCarers();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
 
         auth = FirebaseAuth.getInstance();
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -74,7 +85,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        signInButton = (SignInButton)findViewById(R.id.googleSignInButton);
+        signInButton = (SignInButton) findViewById(R.id.googleSignInButton);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,8 +100,8 @@ public class WelcomeActivity extends AppCompatActivity {
         patientToggle.setOnCheckedChangeListener(changeChecker);
         carerToggle.setOnCheckedChangeListener(changeChecker);
 
-        nameBox = (EditText)findViewById(R.id.nameBox);
-        emailBox = (EditText)findViewById(R.id.userEmailBox);
+        nameBox = (EditText) findViewById(R.id.nameBox);
+        emailBox = (EditText) findViewById(R.id.userEmailBox);
 
         ok = (Button) findViewById(R.id.okButton);
 
@@ -100,16 +111,13 @@ public class WelcomeActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              try {
-                  if(carerToggle.isChecked() || patientToggle.isChecked()){
-                      createAccount();
-                  }
-                   else{
-                       Toast.makeText(getApplicationContext(), "Please select if you are a carer or patient and try again", Toast.LENGTH_SHORT);
-                  }
-                }
-                catch (Exception e)
-                {
+                try {
+                    if (carerToggle.isChecked() || patientToggle.isChecked()) {
+                        createAccount();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Please select if you are a carer or patient and try again", Toast.LENGTH_SHORT);
+                    }
+                } catch (Exception e) {
 
                 }
             }
@@ -158,12 +166,10 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask){
-        try{
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
             final GoogleSignInAccount acct = completedTask.getResult(ApiException.class);
-            //TODO
-            //if user already exists in database, then log them in to the correct home screen. else set the credentials automatically
-            final String userID= acct.getId();
+            final String userID = acct.getId();
             reff = FirebaseDatabase.getInstance().getReference("account");
             final Query query = reff.orderByChild(userID).limitToFirst(1);
             query.addValueEventListener(new ValueEventListener() {
@@ -171,17 +177,19 @@ public class WelcomeActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     String firebaseUserID = dataSnapshot.child(userID).child("userID").getValue().toString();
                     System.out.println(firebaseUserID);
-                    if(firebaseUserID.equals(userID)){
+                    if (firebaseUserID.equals(userID)) {
                         reff = FirebaseDatabase.getInstance().getReference("account").child(userID);
                         reff.addValueEventListener(new ValueEventListener() {
+                            @RequiresApi(api = Build.VERSION_CODES.M)
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
                                 System.out.println(firebaseIsCarer);
                                 if (firebaseIsCarer == "true") {
+                                    setAccountDetails(true, acct);
                                     openCarerHomeActivity();
-                                }
-                                else{
+                                } else {
+                                    setAccountDetails(false, acct);
                                     openPatientHomeActivity();
                                 }
                             }
@@ -193,8 +201,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         });
 
 
-                    }
-                    else{
+                    } else {
                         setCredentials();
                     }
                 }
@@ -206,16 +213,13 @@ public class WelcomeActivity extends AppCompatActivity {
             });
 
 
-
-
-
-        } catch(ApiException e){
+        } catch (ApiException e) {
 
         }
     }
 
 
-    private void setCredentials(){
+    private void setCredentials() {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         nameBox.setText(account.getGivenName());
         emailBox.setText(account.getEmail());
@@ -247,22 +251,26 @@ public class WelcomeActivity extends AppCompatActivity {
     CompoundButton.OnCheckedChangeListener changeChecker = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (buttonView == patientToggle) { carerToggle.setChecked(false); }
-            if(buttonView == carerToggle) { patientToggle.setChecked(false); }
+            if (buttonView == patientToggle) {
+                carerToggle.setChecked(false);
+            }
+            if (buttonView == carerToggle) {
+                patientToggle.setChecked(false);
+            }
         }
     };
 
-    private void openCarerHomeActivity(){
+    private void openCarerHomeActivity() {
         Intent intent = new Intent(this, CarerHomeActivity.class);
         startActivity(intent);
     }
 
-    private void openPatientHomeActivity(){
+    private void openPatientHomeActivity() {
         Intent intent = new Intent(this, PatientHomeActivity.class);
         startActivity(intent);
     }
 
-    private void createAccount(){
+    private void createAccount() {
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
 
         String ID = acct.getId();
@@ -272,10 +280,9 @@ public class WelcomeActivity extends AppCompatActivity {
         String profileURL = acct.getPhotoUrl().toString();
         boolean isCarer = true;
 
-        if(carerToggle.isChecked()){
+        if (carerToggle.isChecked()) {
             isCarer = true;
-        }
-        else{
+        } else {
             isCarer = false;
         }
 
@@ -291,17 +298,72 @@ public class WelcomeActivity extends AppCompatActivity {
         reff.child(account.getUserID()).setValue(account);
 
 
-        if(isCarer){
+        if (isCarer) {
             openCarerHomeActivity();
-        }
-        else{
+        } else {
             openPatientHomeActivity();
         }
 
 
     }
 
+    static Account getAccountDetails() {
+        return account;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void setAccountDetails(boolean isCarer, GoogleSignInAccount acct) {
+        account = new Account();
+        account.setFirstName(acct.getGivenName());
+        account.setLastName(acct.getFamilyName());
+        account.setIsCarer(isCarer);
+        account.setEmailAddress(acct.getEmail());
+        account.setUserID(acct.getId());
+        account.setCloudID("");
+        account.setMobileNumber("");
+    }
+
+    //Needed to read mobile number of users phone
+  /*  @RequiresApi(api = Build.VERSION_CODES.M)
+    private String getMobileNumber() {
+        String mPhoneNumber = null;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                TelephonyManager tMgr = (TelephonyManager)   this.getSystemService(Context.TELEPHONY_SERVICE);
+                mPhoneNumber = tMgr.getLine1Number();
+                return mPhoneNumber;
+            }
+        else {
+                requestPermission();
+                return mPhoneNumber;
+            }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE}, 100);
+        }
+    }
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 100:
+                TelephonyManager tMgr = (TelephonyManager)  this.getSystemService(Context.TELEPHONY_SERVICE);
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) !=
+                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED  &&
+                        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=      PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                String mPhoneNumber = tMgr.getLine1Number();
+                break;
+        }
+    }
+
+   */
 
 
-}
+    }
+
+
 

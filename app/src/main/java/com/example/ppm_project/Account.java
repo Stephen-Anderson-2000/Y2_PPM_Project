@@ -6,10 +6,11 @@ public class Account{
     private String FirstName;
     private String LastName;
     private String EmailAddress;
-    //private int MobileNumber;
+    private String MobileNumber;
     private String UserID;
     private Boolean IsCarer;
     private String ProfileURL;
+    private String CloudID;
 
     public Account(){
 
@@ -21,7 +22,7 @@ public class Account{
 
     public void setEmailAddress(String emailAddress) { EmailAddress = emailAddress; }
 
-    //public void setMobileNumber(int mobileNumber) { MobileNumber = mobileNumber; }
+    public void setMobileNumber(String mobileNumber) { MobileNumber = mobileNumber; }
 
     public void setUserID(String userID) { UserID = userID; }
 
@@ -29,15 +30,20 @@ public class Account{
 
     public void setProfileURL(String profileURL) { ProfileURL = profileURL; }
 
+    public void setCloudID(String cloudID){CloudID = cloudID;}
+
     public String getFirstName() { return FirstName; }
 
     public String getLastName() { return LastName; }
 
     public String getEmailAddress() { return EmailAddress; }
 
-    //public int getMobileNumber() { return MobileNumber; }
+    public String getMobileNumber() { return MobileNumber; }
 
     public String getUserID() { return UserID; }
 
     public Boolean getIsCarer(){return IsCarer;}
+
+    public String getCloudID(){return CloudID;};
+
 }

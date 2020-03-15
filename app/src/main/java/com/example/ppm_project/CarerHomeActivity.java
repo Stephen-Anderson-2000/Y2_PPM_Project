@@ -44,7 +44,7 @@ Carer currentCarer;
     private ArrayList<Double> zArray = new ArrayList<>();
     private Boolean fileRead = false;
     private TextView carerNameBox;
-    private Account account;
+    private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +76,7 @@ Carer currentCarer;
         });
 
 
-
-    //    carerNameBox.setText(account.getFirstName());
+        carerNameBox.setText(CurrentAccount.getFirstName());
 
    /*     Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
         checkReceivedThread.start();

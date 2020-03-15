@@ -20,9 +20,10 @@
 
     <TextView
         android:id="@+id/carerNameBox"
-        android:layout_width="65dp"
-        android:layout_height="29dp"
+        android:layout_width="221dp"
+        android:layout_height="26dp"
         android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="@string/carer_name"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
