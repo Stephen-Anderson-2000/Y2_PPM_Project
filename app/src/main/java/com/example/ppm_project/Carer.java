@@ -3,8 +3,8 @@ package com.example.ppm_project;
 import java.util.ArrayList;
 
 public class Carer extends Account {
-    ArrayList<Patient> patientArrayList = new ArrayList<>();
-    HelpMessage theReceivedMessage;
+    private ArrayList<Patient> patientArrayList = new ArrayList<>();
+    private HelpMessage theReceivedMessage;
 
     public void addPatient(Patient newPatient)
     {

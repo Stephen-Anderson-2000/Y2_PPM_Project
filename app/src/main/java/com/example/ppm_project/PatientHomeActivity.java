@@ -2,12 +2,9 @@ package com.example.ppm_project;
 
 import com.opencsv.CSVReader;
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,11 +22,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
-
 
 public class PatientHomeActivity extends AppCompatActivity
 {
@@ -85,7 +91,6 @@ public class PatientHomeActivity extends AppCompatActivity
 
         checkGPSPermissions();
         checkGPSStatus();
-
     }
 
     public void makeButtons()
@@ -215,11 +220,7 @@ public class PatientHomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         if (requestCode == 10) {
-            try
-            {
-                loadingFileDialog.show();
-                new LoadCSVFile().execute(findFilePath(data));
-            }
+            try { new LoadCSVFile().execute(findFilePath(data)); }
             catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
         if (requestCode == 15)
@@ -227,7 +228,6 @@ public class PatientHomeActivity extends AppCompatActivity
             try
             {
                 calibrating = true;
-                loadingFileDialog.show();
                 new LoadCSVFile().execute(findFilePath(data));
             }
             catch (Exception e) { Log.v(TAG, "Caught exception when loading .csv", e); calibrating = false; }
@@ -251,7 +251,7 @@ public class PatientHomeActivity extends AppCompatActivity
     {
         switch (requestCode)
         {
-            case 10:
+            case 1:
                 currentPatient.setPatientLocation(fetchLocation());
                 break;
             default:
@@ -271,11 +271,22 @@ public class PatientHomeActivity extends AppCompatActivity
         {
             if (myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 Carer theCarer = currentPatient.getTheCarer();
+
                 currentPatient.setPatientLocation(fetchLocation());
-                System.out.println(currentPatient.getPatientLocation());
+                URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
+                new SetPlusCode().execute(gpsURL);
+
                 currentPatient.sendHelpMessage();
-                messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
-                        "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
+                if (currentPatient.getPatientLocation() != null && currentPatient.getPatientPlusCode() != null)
+                {
+                    messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
+                            "\n\nTheir GPS location is: " + currentPatient.getPatientLocation() + "\n\n Their plus code is: " + currentPatient.getPatientPlusCode().substring(19));
+                    // substring start index is 19 to remove the rest of the plus code's url
+                }
+                else
+                {
+                    messageAlertDialog.setMessage("Currently locations are null, will take a few seconds to update. Message sent anyway.");
+                }
                 messageAlertDialog.show();
             }
             else
@@ -284,6 +295,7 @@ public class PatientHomeActivity extends AppCompatActivity
             }
         }
         catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
+        catch (MalformedURLException e) {Log.e(TAG, "Error making gps url", e); }
     }
 
     private Location fetchLocation()
@@ -295,60 +307,6 @@ public class PatientHomeActivity extends AppCompatActivity
         }
         catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
         return null;
-    }
-
-    public String readFile(String fileName) {
-        StringBuilder allData = new StringBuilder();
-        try {
-            if (isReadStoragePermissionGranted()) {
-                try {
-                    File csvfile = new File(Environment.getExternalStorageDirectory() + "/Carer App CSV Files/Calibrating.csv");
-                    System.out.println("Found file at " + csvfile.getAbsolutePath());
-                    CSVReader reader = new CSVReader(new FileReader(csvfile.getAbsolutePath()));
-
-                    System.out.println("CSVReader created");
-                    String[] row;
-
-                    reader.readNext();
-                    while ((row = reader.readNext()) != null) {
-                        String[] csvData = row;//.split(",");
-
-                        sArray.add(Double.valueOf(csvData[2]));
-                        xArray.add(Double.valueOf(csvData[3]));
-                        yArray.add(Double.valueOf(csvData[4]));
-                        zArray.add(Double.valueOf(csvData[5]));
-
-                        for (int i = 2; i < csvData.length; i++) {
-                            allData.append(csvData[i]).append("  ");
-                        }
-                        allData.append("\n");
-                    }
-
-                } catch (java.io.IOException s) {
-                    System.out.println(s.getMessage());
-                }
-            }
-            return allData.toString();
-        } catch (Exception e) {
-            System.out.println("Caught exception: " + e);
-            return "";
-        }
-    }
-
-    private boolean isReadStoragePermissionGranted() {
-        String TAG = "ReadCSV";
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED)
-            {
-                Log.v(TAG,"Read permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
-                return false;
-            }
-        }
-        //permission is automatically granted on sdk < 23 upon installation
-        Log.v(TAG,"Read permission is granted");
-        return true;
     }
 
     private void checkGPSPermissions()
@@ -365,34 +323,34 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private void checkGPSStatus() { if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); } }
 
-
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
         String TAG = "LoadCSVFiles Class";
-        /*
-                @Override
-                protected void onPreExecute()
-                {
-                    loadingFileDialog.show();
-                }
-        */
+
+        @Override
+        protected void onPreExecute() { loadingFileDialog.show(); }
+
         @Override
         protected String doInBackground(String... theFilePath)
         {
             readFile(theFilePath[0]);
-            return "Data read";
+            return theFilePath[0];
         }
 
         private void readFile(String filePath) {
             StringBuilder allData = new StringBuilder();
-            try {
-                if (isReadStoragePermissionGranted() && filePath != "") {
-                    try {
+            try
+            {
+                if (filePath != "" && filePath != null)
+                {
+                    try
+                    {
                         CSVReader reader = new CSVReader(new FileReader(Environment.getExternalStorageDirectory() + filePath));
 
                         String[] row;
 
                         reader.readNext();
-                        while ((row = reader.readNext()) != null) {
+                        while ((row = reader.readNext()) != null)
+                        {
                             String[] csvData = row;//.split(",");
 
                             sArray.add(Double.valueOf(csvData[2]));
@@ -400,51 +358,103 @@ public class PatientHomeActivity extends AppCompatActivity
                             yArray.add(Double.valueOf(csvData[4]));
                             zArray.add(Double.valueOf(csvData[5]));
                         }
-
-                    } catch (java.io.IOException s) {
+                    }
+                    catch (java.io.IOException s)
+                    {
                         System.out.println(s.getMessage());
                     }
                 }
-            } catch (Exception e) {
-                Log.v(TAG, "Caught exception in readFile()", e);
+                else { loadingFileDialog.hide(); }
             }
+            catch (Exception e) { Log.v(TAG, "Caught exception in readFile()", e); }
         }
 
         @Override
-        protected void onPostExecute(String resultMsg)
+        protected void onPostExecute(String filePath)
         {
-            AccelerationData accDat = new AccelerationData();// = analyseFile();
-            accDat.setVals(sArray, xArray, yArray, zArray);
-
-            if (calibrating)
+            if (filePath != "" && filePath != null)
             {
-                Calibration calTest = new Calibration();
+                AccelerationData accDat = new AccelerationData();// = analyseFile();
+                accDat.setVals(sArray, xArray, yArray, zArray);
 
-                currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.sortVarArray(calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)))));
-                System.out.println("The new threshold: " + currentPatient.getThresholdValue());
+                if (calibrating)
+                {
+                    Calibration calTest = new Calibration();
 
-                loadingFileDialog.hide();
+                    currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.sortVarArray(calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)))));
+                    System.out.println("The new threshold: " + currentPatient.getThresholdValue());
 
-                calibrationDialog.setMessage("Calibration Complete! \nThreshold value: " + currentPatient.getThresholdValue());
-                calibrationDialog.show();
-                calibrating = false;
-            }
-            else
-            {
-                loadingFileDialog.hide();
-                if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
-                    messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
-                    messageAlertDialog.show();
-                    sendHelp();
-                } else {
-                    messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
-                    messageAlertDialog.show();
+                    loadingFileDialog.hide();
+
+                    calibrationDialog.setMessage("Calibration Complete! \nThreshold value: " + currentPatient.getThresholdValue());
+                    calibrationDialog.show();
+                    calibrating = false;
                 }
+                else
+                {
+                    loadingFileDialog.hide();
+                    if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
+                        messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                        messageAlertDialog.show();
+                        sendHelp();
+                    } else {
+                        messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
+                        messageAlertDialog.show();
+                    }
+                }
+                sArray.clear();
+                xArray.clear();
+                yArray.clear();
+                zArray.clear();
             }
-            sArray.clear();
-            xArray.clear();
-            yArray.clear();
-            zArray.clear();
+        }
+    }
+
+    private class SetPlusCode extends AsyncTask<URL, Void, String> {
+
+        String TAG = "PlusCodeClass";
+
+        @Override
+        protected String doInBackground(URL... theURL)
+        {
+            try {
+                JSONObject plusCodeJSON = getPlusCodeObject(theURL[0]);
+                String urlPlusCode = "https://plus.codes/" + plusCodeJSON.getJSONObject("plus_code").getString("global_code");
+                return urlPlusCode;
+            }
+            catch (Exception ex)
+            {
+                Log.e(TAG, "Found exception when parsing JSON", ex);
+            }
+            return null;
+        }
+
+        private JSONObject getPlusCodeObject(URL theURL)
+        {
+            try
+            {
+                InputStream inStream = theURL.openStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
+                String rawJSONString = readStream(reader);
+                return new JSONObject(rawJSONString);
+            }
+            catch (Exception ex) { Log.e(TAG, "Found exception when fetching JSON", ex); return null; }
+        }
+
+
+        private String readStream(Reader rd) throws IOException {
+
+            StringBuilder strBuilder = new StringBuilder();
+            int data;
+            while ((data = rd.read()) != -1) {
+                strBuilder.append((char) data);
+            }
+            return strBuilder.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String urlPlusCode) {
+            currentPatient.setPatientPlusCode(urlPlusCode);
         }
     }
 
