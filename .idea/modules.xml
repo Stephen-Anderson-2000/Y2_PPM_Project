@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GitHub-PPM_Project.iml" filepath="$PROJECT_DIR$/GitHub-PPM_Project.iml" group="PPM_Project" />
       <module fileurl="file://$PROJECT_DIR$/app/GitHub-PPM_Project-app.iml" filepath="$PROJECT_DIR$/app/GitHub-PPM_Project-app.iml" group="PPM_Project/app" />
+      <module fileurl="file://$PROJECT_DIR$/Merged PPM-PPM_Project.iml" filepath="$PROJECT_DIR$/Merged PPM-PPM_Project.iml" group="PPM_Project" />
+      <module fileurl="file://$PROJECT_DIR$/app/Merged PPM-PPM_Project-app.iml" filepath="$PROJECT_DIR$/app/Merged PPM-PPM_Project-app.iml" group="PPM_Project/app" />
       <module fileurl="file://$PROJECT_DIR$/PPM-Project-PPM_Project.iml" filepath="$PROJECT_DIR$/PPM-Project-PPM_Project.iml" group="PPM_Project" />
       <module fileurl="file://$PROJECT_DIR$/app/PPM-Project-PPM_Project-app.iml" filepath="$PROJECT_DIR$/app/PPM-Project-PPM_Project-app.iml" group="PPM_Project/app" />
       <module fileurl="file://$PROJECT_DIR$/PPM_Project.iml" filepath="$PROJECT_DIR$/PPM_Project.iml" group="PPM_Project" />

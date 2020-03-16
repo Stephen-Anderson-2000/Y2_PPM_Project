@@ -1,5 +1,6 @@
 package com.example.ppm_project;
 
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +15,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -42,7 +42,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-
 
 public class WelcomeActivity extends AppCompatActivity {
     private static final String TAG = "WelcomeActivity";
@@ -114,6 +113,7 @@ public class WelcomeActivity extends AppCompatActivity {
                 try {
                     if (carerToggle.isChecked() || patientToggle.isChecked()) {
                         createAccount();
+                        setFMCToken();
                     } else {
                         Toast.makeText(getApplicationContext(), "Please select if you are a carer or patient and try again", Toast.LENGTH_SHORT);
                     }
@@ -123,6 +123,10 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    private void setFMCToken() {
         // Get the current FCM Token of this device
         FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
             @Override
@@ -134,13 +138,23 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 // Get new Instance ID token
                 String token = task.getResult().getToken();
+                //
+                sendRegistrationToServer(token);
 
-                // Log and toast
+                // Log
                 String msg = "FCM Token: " + token;
                 Log.d(TAG, msg);
-                Toast.makeText(WelcomeActivity.this, msg, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static void sendRegistrationToServer(String token) {
+        Account CurrentAccount = WelcomeActivity.getAccountDetails();
+
+        CurrentAccount.setCloudID(token);
+
+        DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
+        reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
     }
 
 
@@ -275,6 +289,7 @@ public class WelcomeActivity extends AppCompatActivity {
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
 
         String ID = acct.getId();
+
         String firstName = nameBox.getText().toString();
         String lastName = acct.getFamilyName();
         String email = emailBox.getText().toString();
@@ -305,14 +320,12 @@ public class WelcomeActivity extends AppCompatActivity {
             openPatientHomeActivity();
         }
 
-
     }
 
     static Account getAccountDetails() {
         return account;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void setAccountDetails(boolean isCarer, GoogleSignInAccount acct) {
         account = new Account();
         account.setFirstName(acct.getGivenName());
@@ -325,7 +338,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     //Needed to read mobile number of users phone
-  /*  @RequiresApi(api = Build.VERSION_CODES.M)
+    /*
     private String getMobileNumber() {
         String mPhoneNumber = null;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -340,7 +353,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE}, 100);
@@ -359,9 +371,9 @@ public class WelcomeActivity extends AppCompatActivity {
                 String mPhoneNumber = tMgr.getLine1Number();
                 break;
         }
-    }
+    } */
 
-   */
+
 
 
     }

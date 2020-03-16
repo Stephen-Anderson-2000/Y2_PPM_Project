@@ -1,13 +1,18 @@
 package com.example.ppm_project;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.opencsv.CSVReader;
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,19 +21,32 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import cz.msebera.android.httpclient.HttpHeaders;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class PatientHomeActivity extends AppCompatActivity
 {
@@ -53,17 +71,20 @@ public class PatientHomeActivity extends AppCompatActivity
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
+    public static PatientHomeActivity PatientHomeActivity;
+    private String currentCarerToken = "";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         CurrentUserID currentUserID = new CurrentUserID();
         currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
+
+        PatientHomeActivity = this;
 
         makeButtons();
         setupDialogBoxes();
@@ -86,6 +107,104 @@ public class PatientHomeActivity extends AppCompatActivity
         checkGPSPermissions();
         checkGPSStatus();
 
+        askForCarerName();
+        //alertCarer();
+
+    }
+
+    private void askForCarerName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter your current carers name");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                currentCarerToken = getCarerToken(input.getText().toString());
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private String getCarerToken(String carerName) {
+        final String[] carerToken = new String[1];
+        DatabaseReference reff = FirebaseDatabase.getInstance().getReference("account");
+        Query query = reff.orderByChild("firstName").equalTo(carerName);
+
+        query.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                carerToken[0] = dataSnapshot.child(dataSnapshot.getValue().toString()).child("cloudID").getValue().toString();  //BROKEN, Keeps returning null
+                Log.i(TAG, carerToken[0]);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return carerToken[0];
+    }
+
+    private void alertCarer() {
+        final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
+        Dialog.setMessage("Sending Help Message...");
+        Dialog.setCancelable(false);
+        Dialog.show();
+
+        String url = "https://fcm.googleapis.com/fcm/send";
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.addHeader(HttpHeaders.AUTHORIZATION, "key=AIzaSyCNIcgHOV7t3I-u9arDqmBSQj34oiiofoo");
+        client.addHeader(HttpHeaders.CONTENT_TYPE, RequestParams.APPLICATION_JSON);
+
+        try {
+            JSONObject params = new JSONObject();
+
+            JSONArray registration_ids = new JSONArray();
+            registration_ids.put(currentCarerToken);
+
+            params.put("registration_ids", registration_ids);
+
+            JSONObject notificationObject = new JSONObject();
+            notificationObject.put("body", "Patient Needs help!");
+            notificationObject.put("title", "Alert");
+
+            params.put("notification", notificationObject);
+
+            StringEntity entity = new StringEntity(params.toString());
+
+            client.post(getApplicationContext(), url, entity, RequestParams.APPLICATION_JSON, new TextHttpResponseHandler() {
+                @Override
+                public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
+                    Dialog.dismiss();
+                    Log.i(TAG, responseString);
+                }
+
+                @Override
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                    Dialog.dismiss();
+                    Log.i(TAG, responseString);
+                }
+            });
+
+        } catch (Exception e) {
+
+        }
     }
 
     public void makeButtons()
