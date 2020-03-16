@@ -106,6 +106,20 @@ public class WelcomeActivity extends AppCompatActivity {
 
         reff = FirebaseDatabase.getInstance().getReference().child("account");
 
+        reff.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    maxid= (dataSnapshot.getChildrenCount());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -311,7 +325,7 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setUserID(ID);
 
         Toast.makeText(getApplicationContext(), account.toString(), Toast.LENGTH_LONG);
-        reff.child(account.getUserID()).setValue(account);
+        reff.child(String.valueOf(maxid+1)).setValue(account);
 
 
         if (isCarer) {

@@ -73,6 +73,7 @@ public class PatientHomeActivity extends AppCompatActivity
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
     public static PatientHomeActivity PatientHomeActivity;
     private String currentCarerToken = "";
+    private DatabaseReference reff;
 
 
     @Override
@@ -141,14 +142,14 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private String getCarerToken(String carerName) {
         final String[] carerToken = new String[1];
-        DatabaseReference reff = FirebaseDatabase.getInstance().getReference("account");
-        Query query = reff.orderByChild("firstName").equalTo(carerName);
+        reff = FirebaseDatabase.getInstance().getReference("account").child(//carerNumber); //instead of carerName get the user to enter a number to be the child here
+        //Query query = reff.orderByChild("firstName").equalTo(carerName); Done bother with a query in this case just use reff to the specific user your trying to find
 
-        query.addValueEventListener(new ValueEventListener() {
+        reff.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                carerToken[0] = dataSnapshot.child(dataSnapshot.getValue().toString()).child("cloudID").getValue().toString();  //BROKEN, Keeps returning null
+                carerToken[0] = dataSnapshot.child("cloudID").getValue().toString();  //BROKEN, Keeps returning null
                 Log.i(TAG, carerToken[0]);
             }
 
