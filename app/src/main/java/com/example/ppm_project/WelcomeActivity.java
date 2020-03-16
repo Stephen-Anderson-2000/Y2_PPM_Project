@@ -3,11 +3,13 @@ package com.example.ppm_project;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +20,7 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -59,6 +62,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private DatabaseReference reff;
     private static Account account;
     private long maxid = 0;
+    private static String userID;
 
 
     public int enteredUserID = -1;
@@ -137,7 +141,7 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
-
+        askForID();
     }
 
     private void setFMCToken() {
@@ -168,7 +172,7 @@ public class WelcomeActivity extends AppCompatActivity {
         CurrentAccount.setCloudID(token);
 
         DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
-        reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
+        reff.child(userID).setValue(CurrentAccount);
     }
 
 
@@ -325,7 +329,7 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setUserID(ID);
 
         Toast.makeText(getApplicationContext(), account.toString(), Toast.LENGTH_LONG);
-        reff.child(String.valueOf(maxid+1)).setValue(account);
+        reff.child(userID).setValue(account);
 
 
         if (isCarer) {
@@ -334,6 +338,33 @@ public class WelcomeActivity extends AppCompatActivity {
             openPatientHomeActivity();
         }
 
+    }
+
+    private void askForID() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter your ID Number");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                userID = input.getText().toString();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
     static Account getAccountDetails() {

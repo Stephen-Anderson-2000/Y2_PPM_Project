@@ -109,13 +109,12 @@ public class PatientHomeActivity extends AppCompatActivity
         checkGPSStatus();
 
         askForCarerName();
-        //alertCarer();
 
     }
 
     private void askForCarerName() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter your current carers name");
+        builder.setTitle("Enter your current carers ID Number");
 
         // Set up the input
         final EditText input = new EditText(this);
@@ -127,7 +126,7 @@ public class PatientHomeActivity extends AppCompatActivity
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                currentCarerToken = getCarerToken(input.getText().toString());
+                getCarerToken(input.getText().toString());
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -140,17 +139,15 @@ public class PatientHomeActivity extends AppCompatActivity
         builder.show();
     }
 
-    private String getCarerToken(String carerName) {
-        final String[] carerToken = new String[1];
-        reff = FirebaseDatabase.getInstance().getReference("account").child(//carerNumber); //instead of carerName get the user to enter a number to be the child here
-        //Query query = reff.orderByChild("firstName").equalTo(carerName); Done bother with a query in this case just use reff to the specific user your trying to find
+    private void getCarerToken(String carerNumber) {
+        reff = FirebaseDatabase.getInstance().getReference("account").child(carerNumber);
 
         reff.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                carerToken[0] = dataSnapshot.child("cloudID").getValue().toString();  //BROKEN, Keeps returning null
-                Log.i(TAG, carerToken[0]);
+                currentCarerToken = dataSnapshot.child("cloudID").getValue().toString();
+                Log.i(TAG, "Carers FCM Token: " + currentCarerToken);
             }
 
             @Override
@@ -158,7 +155,6 @@ public class PatientHomeActivity extends AppCompatActivity
 
             }
         });
-        return carerToken[0];
     }
 
     private void alertCarer() {
@@ -248,7 +244,8 @@ public class PatientHomeActivity extends AppCompatActivity
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendHelp();
+                //sendHelp();
+                alertCarer();
             }
         });
 
