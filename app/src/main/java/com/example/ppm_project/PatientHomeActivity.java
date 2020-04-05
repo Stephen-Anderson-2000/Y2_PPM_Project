@@ -108,7 +108,7 @@ public class PatientHomeActivity extends AppCompatActivity
         checkGPSPermissions();
         checkGPSStatus();
 
-        askForCarerName();
+       // askForCarerName();
 
     }
 
@@ -173,7 +173,7 @@ public class PatientHomeActivity extends AppCompatActivity
             JSONObject params = new JSONObject();
 
             JSONArray registration_ids = new JSONArray();
-            registration_ids.put(currentCarerToken);
+            registration_ids.put(currentCarerToken); //replace this with carer.getCloudID
 
             params.put("registration_ids", registration_ids);
 
@@ -413,7 +413,7 @@ public class PatientHomeActivity extends AppCompatActivity
         Intent intent = new Intent(this, CarerInfoActivity.class);
         startActivity(intent);
     }
-
+//TODO needs changing to work with new account system: can now get carer details by calling CurrentCarer.getFirstName() etc
     public void sendHelp()
     {
         try
@@ -423,8 +423,8 @@ public class PatientHomeActivity extends AppCompatActivity
                 currentPatient.setPatientLocation(fetchLocation());
                 System.out.println(currentPatient.getPatientLocation());
                 currentPatient.sendHelpMessage();
-                messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
-                        "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
+               // messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
+             //           "\n\nTheir GPS location is: " + currentPatient.getPatientLocation());
                 messageAlertDialog.show();
             }
             else

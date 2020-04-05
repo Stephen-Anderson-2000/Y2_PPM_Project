@@ -62,7 +62,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private DatabaseReference reff;
     private static Account account;
     private long maxid = 0;
-    private static String userID;
 
 
     public int enteredUserID = -1;
@@ -131,7 +130,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 try {
                     if (carerToggle.isChecked() || patientToggle.isChecked()) {
                         createAccount();
-                        setFMCToken();
                     } else {
                         Toast.makeText(getApplicationContext(), "Please select if you are a carer or patient and try again", Toast.LENGTH_SHORT);
                     }
@@ -141,7 +139,7 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
-        askForID();
+        //askForID();
     }
 
     private void setFMCToken() {
@@ -159,9 +157,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 //
                 sendRegistrationToServer(token);
 
+
                 // Log
                 String msg = "FCM Token: " + token;
                 Log.d(TAG, msg);
+
             }
         });
     }
@@ -172,7 +172,7 @@ public class WelcomeActivity extends AppCompatActivity {
         CurrentAccount.setCloudID(token);
 
         DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
-        reff.child(userID).setValue(CurrentAccount);
+        reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
     }
 
 
@@ -314,6 +314,8 @@ public class WelcomeActivity extends AppCompatActivity {
         String profileURL = acct.getPhotoUrl().toString();
         boolean isCarer = true;
 
+
+
         if (carerToggle.isChecked()) {
             isCarer = true;
         } else {
@@ -329,7 +331,9 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setUserID(ID);
 
         Toast.makeText(getApplicationContext(), account.toString(), Toast.LENGTH_LONG);
-        reff.child(userID).setValue(account);
+        reff.child(acct.getId()).setValue(account);
+
+        setFMCToken();
 
 
         if (isCarer) {
@@ -340,32 +344,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
     }
 
-    private void askForID() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter your ID Number");
-
-        // Set up the input
-        final EditText input = new EditText(this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-        // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                userID = input.getText().toString();
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
 
     static Account getAccountDetails() {
         return account;

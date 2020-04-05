@@ -161,77 +161,77 @@ Carer currentCarer;
         }
     }
 
-    private void displayMessageResultsDialog() {
-        AlertDialog alertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
-        alertDialog.setTitle("Alert");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        try
-        {
-            HelpMessage theReceivedMessage = currentCarer.getTheReceivedMessage();
-            System.out.println("Setting message with Location");
-            alertDialog.setMessage("Patient: " + theReceivedMessage.getSender().getFirstName() +
-                    " is in distress. They are currently at GPS location: " + theReceivedMessage.getSenderLocation());
-            alertDialog.show();
-            currentCarer.receiveMessage(null);
-            openPatientLocation(theReceivedMessage.getSenderLocation());
-        }
-        catch (Exception e)
-        {
-            System.out.println("Caught exception: " + e);
-        }
-
-    }
-
-    private void openPatientLocation(Location patientLocation) {
-        try
-        {
-            if (patientLocation != null) {
-                URL theURL = new URL("https://plus.codes/api?address=" + patientLocation.getLatitude() + "," + patientLocation.getLongitude());
-                new DisplayPatientLocation().execute(theURL);
-            }
-        }
-        catch (Exception ex)
-        {
-            System.out.println(ex);
-        }
-    }
-
-
-    private class CheckMessageReceived implements Runnable{
-
-        Carer currentCarer;
-        private boolean messageIsReceived = false;
-
-        public CheckMessageReceived(Carer theCarer)
-        {
-            currentCarer = theCarer;
-        }
-
-        public void run()
-        {
-            while (true)
-            {
-                try
-                {
-                    HelpMessage receivedMessage = currentCarer.getTheReceivedMessage();
-                    if (receivedMessage != null)
-                    {
-                        System.out.println("Received the help message from " + receivedMessage.getSender().getFirstName());
-                        messageIsReceived = true;
-                        // display the popup
-                        break;
-                    }
-                    Thread.sleep(1000);
-                }
-                catch (InterruptedException e) { }
-            }
-        }
-    }
+//    private void displayMessageResultsDialog() {
+//        AlertDialog alertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
+//        alertDialog.setTitle("Alert");
+//        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        try
+//        {
+//           HelpMessage theReceivedMessage = currentCarer.getTheReceivedMessage();
+//            System.out.println("Setting message with Location");
+//            alertDialog.setMessage("Patient: " + theReceivedMessage.getSender().getFirstName() +
+//                    " is in distress. They are currently at GPS location: " + theReceivedMessage.getSenderLocation());
+//            alertDialog.show();
+//            currentCarer.receiveMessage(null);
+//            openPatientLocation(theReceivedMessage.getSenderLocation());
+//        }
+//        catch (Exception e)
+//        {
+//            System.out.println("Caught exception: " + e);
+//        }
+//
+//    }
+//
+//    private void openPatientLocation(Location patientLocation) {
+//        try
+//        {
+//            if (patientLocation != null) {
+//                URL theURL = new URL("https://plus.codes/api?address=" + patientLocation.getLatitude() + "," + patientLocation.getLongitude());
+//                new DisplayPatientLocation().execute(theURL);
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            System.out.println(ex);
+//        }
+//    }
+//
+//
+//    private class CheckMessageReceived implements Runnable{
+//
+//        Carer currentCarer;
+//        private boolean messageIsReceived = false;
+//
+//        public CheckMessageReceived(Carer theCarer)
+//        {
+//            currentCarer = theCarer;
+//        }
+//
+//        public void run()
+//        {
+//            while (true)
+//            {
+//                try
+//                {
+//                    HelpMessage receivedMessage = currentCarer.getTheReceivedMessage();
+//                    if (receivedMessage != null)
+//                    {
+//                        System.out.println("Received the help message from " + receivedMessage.getSender().getFirstName());
+//                        messageIsReceived = true;
+//                        // display the popup
+//                        break;
+//                    }
+//                    Thread.sleep(1000);
+//                }
+//                catch (InterruptedException e) { }
+//            }
+//        }
+//    }
 
 
     private class DisplayPatientLocation extends AsyncTask<URL, Void, String> {

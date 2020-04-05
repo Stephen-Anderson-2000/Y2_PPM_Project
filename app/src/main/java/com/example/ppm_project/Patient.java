@@ -29,7 +29,7 @@ public class Patient extends Account {
         newMessage.setSender(this);
         newMessage.setRecipient(theCarer);
         newMessage.setSenderLocation(patientLocation);
-        theCarer.receiveMessage(newMessage);
+       // theCarer.receiveMessage(newMessage);
     }
 
 }
