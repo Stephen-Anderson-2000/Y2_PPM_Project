@@ -44,6 +44,7 @@ Carer currentCarer;
     private ArrayList<Double> zArray = new ArrayList<>();
     private Boolean fileRead = false;
     private TextView carerNameBox;
+    private Button myIDButton;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
 
     @Override
@@ -55,6 +56,8 @@ Carer currentCarer;
         textPath = findViewById(R.id.filePath); //TEMP
         carerNameBox = findViewById(R.id.carerNameBox);
         filePicker = findViewById(R.id.researchDataButton);
+        myIDButton = (Button)findViewById(R.id.myIDButton);
+
         getCurrentUser();
         filePicker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +75,13 @@ Carer currentCarer;
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(CarerHomeActivity.this, whatIsThisPopUpActivity.class));
+            }
+        });
+
+        myIDButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showIDDialog();
             }
         });
 
@@ -290,6 +300,19 @@ Carer currentCarer;
 
     private void getCurrentUser(){
 
+    }
+
+    private void showIDDialog(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Your User ID");
+        alert.setMessage(CurrentAccount.getUserID());
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.create().show();
     }
 
 

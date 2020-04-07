@@ -19,4 +19,5 @@
     <string name="default_id_box_value">PLEASE ENTER YOUR USER ID HERE</string>
     <string name="user_email_header">USER EMAIL</string>
     <string name="user_email_box">PLEASE ENTER YOUR EMAIL</string>
+    <string name="my_ID_Button">MY ID</string>
 </resources>

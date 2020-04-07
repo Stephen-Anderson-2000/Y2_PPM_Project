@@ -11,6 +11,7 @@ public class Account{
     private Boolean IsCarer;
     private String ProfileURL;
     private String CloudID;
+    private Boolean HasCarer;
 
     public Account(){
 
@@ -32,6 +33,8 @@ public class Account{
 
     public void setCloudID(String cloudID){CloudID = cloudID;}
 
+    public void setHasCarer(Boolean hasCarer){HasCarer = hasCarer;};
+
     public String getFirstName() { return FirstName; }
 
     public String getLastName() { return LastName; }
@@ -45,5 +48,7 @@ public class Account{
     public Boolean getIsCarer(){return IsCarer;}
 
     public String getCloudID(){return CloudID;};
+
+    public Boolean getHasCarer(){return HasCarer;};
 
 }

@@ -202,41 +202,26 @@ public class WelcomeActivity extends AppCompatActivity {
         try {
             final GoogleSignInAccount acct = completedTask.getResult(ApiException.class);
             final String userID = acct.getId();
-            reff = FirebaseDatabase.getInstance().getReference("account");
-            final Query query = reff.orderByChild(userID).limitToFirst(1);
-            query.addValueEventListener(new ValueEventListener() {
+            reff = FirebaseDatabase.getInstance().getReference("account").child(userID);
+            reff.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.child(userID).exists()) {
-                        String firebaseUserID = dataSnapshot.child(userID).child("userID").getValue().toString();
-                        if (firebaseUserID.equals(userID)) {
-                            reff = FirebaseDatabase.getInstance().getReference("account").child(userID);
-                            reff.addValueEventListener(new ValueEventListener() {
-                                @RequiresApi(api = Build.VERSION_CODES.M)
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
-                                    if (firebaseIsCarer == "true") {
-                                        setAccountDetails(true, acct);
-                                        openCarerHomeActivity();
-                                    } else {
-                                        setAccountDetails(false, acct);
-                                        openPatientHomeActivity();
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-
-
-                        }
-                    }else {
-                            setCredentials();
+                    if (dataSnapshot.exists()) {
+                        String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
+                        if (firebaseIsCarer == "true") {
+                            setAccountDetails(true, acct);
+                            openCarerHomeActivity();
+                        } else {
+                            setAccountDetails(false, acct);
+                            openPatientHomeActivity();
                         }
 
+
+                    } else {
+
+
+                        setCredentials();
+                    }
                 }
 
                 @Override
@@ -245,11 +230,11 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             });
 
+    } catch (ApiException e) {
 
-        } catch (ApiException e) {
-
-        }
     }
+    }
+
 
 
     private void setCredentials() {
@@ -329,8 +314,7 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setIsCarer(isCarer);
         account.setProfileURL(profileURL);
         account.setUserID(ID);
-
-        Toast.makeText(getApplicationContext(), account.toString(), Toast.LENGTH_LONG);
+        account.setHasCarer(false);
         reff.child(acct.getId()).setValue(account);
 
         setFMCToken();
@@ -358,6 +342,7 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setUserID(acct.getId());
         account.setCloudID("");
         account.setMobileNumber("");
+        account.setHasCarer(false);
     }
 
     //Needed to read mobile number of users phone

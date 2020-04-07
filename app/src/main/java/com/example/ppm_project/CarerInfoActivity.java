@@ -29,6 +29,7 @@ public class CarerInfoActivity extends AppCompatActivity {
     TextView carerNameTitle;
     private DatabaseReference reff;
     private static Carer carer;
+    private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,9 @@ public class CarerInfoActivity extends AppCompatActivity {
         setContentView(R.layout.carer_info);
 
         carerDetailsButton = findViewById(R.id.carerDetailsButton);
-        carerNameTitle = findViewById(R.id.carerNameTitle);
+        carerNameTitle = (TextView)findViewById(R.id.carerNameTitle);
+
+        setCarerTitle();
 
         carerDetailsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,16 +55,17 @@ public class CarerInfoActivity extends AppCompatActivity {
 
         // Set up the input
         final EditText input = new EditText(this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
-
+        if(CurrentAccount.getHasCarer()){
+            input.setText(carer.getUserID());
+        }
         // Set up the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 authenticateCarer(input.getText().toString());
-                carerNameTitle.setText(carer.getFirstName());
+
 
             }
         });
@@ -77,38 +81,26 @@ public class CarerInfoActivity extends AppCompatActivity {
 
     private void authenticateCarer(final String UserID) {
 
-        reff = FirebaseDatabase.getInstance().getReference("account");
-        final Query query = reff.orderByChild(UserID).limitToFirst(1);
+        reff = FirebaseDatabase.getInstance().getReference("account").child(UserID);;
 
-        query.addValueEventListener(new ValueEventListener() {
+        reff.addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child(UserID).exists()) {
-                    reff = FirebaseDatabase.getInstance().getReference("account").child(UserID);
-                    reff.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
-                            if (firebaseIsCarer == "true") {
-                                setCarerDetails(UserID);
-                            }
-                            else {
+                if (dataSnapshot.exists()) {
+                    String firebaseIsCarer = dataSnapshot.child("isCarer").getValue().toString();
+                    if (firebaseIsCarer == "true") {
+                        setCarerDetails(UserID);
+                    } else{
+                        //else it is not a carer so alert user
+                        showNotCarerError();
 
-                                //else it is not a carer so alert user
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-
-
-                    });
+                    }
                 }
-
-
+                else {
+                    //else carer id entered is incorrect or doesnt exist so alert user
+                    showCarerIDError();
+                }
             }
 
             @Override
@@ -119,18 +111,19 @@ public class CarerInfoActivity extends AppCompatActivity {
     }
 
     private void setCarerDetails(final String UserID) {
-        reff = FirebaseDatabase.getInstance().getReference("account").child(UserID);
+
         carer = new Carer();
+        reff = FirebaseDatabase.getInstance().getReference("account").child(UserID);
         reff.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //set details of carer here
                 carer.setFirstName(dataSnapshot.child("firstName").getValue().toString());
                 carer.setLastName(dataSnapshot.child("lastName").getValue().toString());
                 carer.setEmailAddress(dataSnapshot.child("emailAddress").getValue().toString());
                 carer.setCloudID(dataSnapshot.child("cloudID").getValue().toString());
                 carer.setUserID(UserID);
-
+                CurrentAccount.setHasCarer(true);
+                setCarerTitle();
             }
 
             @Override
@@ -142,6 +135,38 @@ public class CarerInfoActivity extends AppCompatActivity {
 
     static Carer getAccountDetails() {
         return carer;
+    }
+
+    private void setCarerTitle(){
+        if(CurrentAccount.getHasCarer()) {
+            carerNameTitle.setText(carer.getFirstName());
+        }
+    }
+
+    private void showCarerIDError(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Incorrect Carer ID Number");
+        alert.setMessage("It seems that the Carer ID you have entered is incorrect, please try again");
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.create().show();
+    }
+
+    private void showNotCarerError(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("User is not a carer");
+        alert.setMessage("It seems that the User ID you have entered belongs to someone who is not a carer, please try again");
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alert.create().show();
     }
 }
 
