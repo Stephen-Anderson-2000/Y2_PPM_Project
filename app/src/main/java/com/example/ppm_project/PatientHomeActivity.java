@@ -71,6 +71,7 @@ public class PatientHomeActivity extends AppCompatActivity
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
+    private static Carer CurrentCarer = CarerInfoActivity.getAccountDetails();
     public static PatientHomeActivity PatientHomeActivity;
     private String currentCarerToken = "";
     private DatabaseReference reff;
@@ -158,49 +159,63 @@ public class PatientHomeActivity extends AppCompatActivity
     }
 
     private void alertCarer() {
-        final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
-        Dialog.setMessage("Sending Help Message...");
-        Dialog.setCancelable(false);
-        Dialog.show();
+        if(CurrentAccount.getHasCarer()) {
+            final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
+            Dialog.setMessage("Sending Help Message...");
+            Dialog.setCancelable(false);
+            Dialog.show();
 
-        String url = "https://fcm.googleapis.com/fcm/send";
-        AsyncHttpClient client = new AsyncHttpClient();
+            String url = "https://fcm.googleapis.com/fcm/send";
+            AsyncHttpClient client = new AsyncHttpClient();
 
-        client.addHeader(HttpHeaders.AUTHORIZATION, "key=AIzaSyCNIcgHOV7t3I-u9arDqmBSQj34oiiofoo");
-        client.addHeader(HttpHeaders.CONTENT_TYPE, RequestParams.APPLICATION_JSON);
+            client.addHeader(HttpHeaders.AUTHORIZATION, "key=AIzaSyCNIcgHOV7t3I-u9arDqmBSQj34oiiofoo");
+            client.addHeader(HttpHeaders.CONTENT_TYPE, RequestParams.APPLICATION_JSON);
 
-        try {
-            JSONObject params = new JSONObject();
+            try {
+                JSONObject params = new JSONObject();
 
-            JSONArray registration_ids = new JSONArray();
-            registration_ids.put(currentCarerToken); //replace this with carer.getCloudID
+                JSONArray registration_ids = new JSONArray();
+                registration_ids.put(CurrentCarer.getCloudID());
 
-            params.put("registration_ids", registration_ids);
+                params.put("registration_ids", registration_ids);
 
-            JSONObject notificationObject = new JSONObject();
-            notificationObject.put("body", "Patient Needs help!");
-            notificationObject.put("title", "Alert");
+                JSONObject notificationObject = new JSONObject();
+                notificationObject.put("body", "Patient Needs help!");
+                notificationObject.put("title", "Alert");
 
-            params.put("notification", notificationObject);
+                params.put("notification", notificationObject);
 
-            StringEntity entity = new StringEntity(params.toString());
+                StringEntity entity = new StringEntity(params.toString());
 
-            client.post(getApplicationContext(), url, entity, RequestParams.APPLICATION_JSON, new TextHttpResponseHandler() {
+                client.post(getApplicationContext(), url, entity, RequestParams.APPLICATION_JSON, new TextHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
+                        Dialog.dismiss();
+                        Log.i(TAG, responseString);
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                        Dialog.dismiss();
+                        Log.i(TAG, responseString);
+                    }
+                });
+
+            } catch (Exception e) {
+
+            }
+        }
+        else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("No Carer");
+            alert.setMessage("It seems that you havent set up a carer yet! Click the carer button and enter your carers ID which can be found on their app");
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
-                public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
-                    Dialog.dismiss();
-                    Log.i(TAG, responseString);
-                }
+                public void onClick(DialogInterface dialog, int which) {
 
-                @Override
-                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
-                    Dialog.dismiss();
-                    Log.i(TAG, responseString);
                 }
             });
-
-        } catch (Exception e) {
-
+            alert.create().show();
         }
     }
 
