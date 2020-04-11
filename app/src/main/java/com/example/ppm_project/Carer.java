@@ -2,40 +2,38 @@ package com.example.ppm_project;
 
 import java.util.ArrayList;
 
-public class Carer {
-    private String FirstName;
-    private String LastName;
-    private String EmailAddress;
-    private String MobileNumber;
-    private String UserID;
-    private String ProfileURL;
-    private String CloudID;
+public class Carer extends Account {
+    private ArrayList<Patient> patientArrayList = new ArrayList<>();
+    private HelpMessage theReceivedMessage;
 
-    public void setFirstName(String firstName) { FirstName = firstName; }
+    public void addPatient(Patient newPatient)
+    {
+        for (Patient aPatient: patientArrayList)
+        {
+            if (aPatient.getUserID() == newPatient.getUserID())
+            {
+                return;
+            }
+        }
+        patientArrayList.add(newPatient);
+    }
 
-    public void setLastName(String lastName) { LastName = lastName; }
+    public void removePatient(Patient oldPatient)
+    {
+        for (Patient aPatient: patientArrayList)
+        {
+            if (aPatient.getUserID() == oldPatient.getUserID())
+            {
+                patientArrayList.remove(oldPatient);
+            }
+        }
+    }
 
-    public void setEmailAddress(String emailAddress) { EmailAddress = emailAddress; }
+    public ArrayList<Patient> getPatientArrayList() { return patientArrayList; }
 
-    public void setMobileNumber(String mobileNumber) { MobileNumber = mobileNumber; }
+    public void receiveMessage(HelpMessage receivedMessage) {
+        this.theReceivedMessage = receivedMessage;
+    }
 
-    public void setUserID(String userID) { UserID = userID; }
-
-    public void setCloudID(String cloudID){CloudID = cloudID;}
-
-    public void setProfileURL(String profileURL) { ProfileURL = profileURL; }
-
-
-    public String getFirstName() { return FirstName; }
-
-    public String getLastName() { return LastName; }
-
-    public String getEmailAddress() { return EmailAddress; }
-
-    public String getMobileNumber() { return MobileNumber; }
-
-    public String getUserID() { return UserID; }
-
-    public String getCloudID(){return CloudID;};
-
+    public HelpMessage getTheReceivedMessage() { return theReceivedMessage; }
 }

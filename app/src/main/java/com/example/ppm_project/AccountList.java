@@ -46,7 +46,7 @@ public class AccountList {
     {
         for (Carer aCarer: carersList)
         {
-            if (Integer.parseInt(aCarer.getUserID())== accountID)
+            if (aCarer.getUserID() == accountID)
             {
                 return aCarer;
             }
@@ -97,7 +97,7 @@ public class AccountList {
     {
         for (Patient aPatient: patientsList)
         {
-            if (Integer.parseInt(aPatient.getUserID())== accountID)
+            if (aPatient.getUserID() == accountID)
             {
                 return aPatient;
             }

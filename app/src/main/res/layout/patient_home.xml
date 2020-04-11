@@ -22,10 +22,9 @@
 
     <TextView
         android:id="@+id/patientNameBox"
-        android:layout_width="203dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
+        android:layout_width="82dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="24dp"
         android:text="@string/patient_name"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
