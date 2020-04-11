@@ -314,7 +314,7 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setUserID(ID);
         account.setHasCarer(false);
         setFMCToken(); //sets cloud id
-        reff.child(acct.getId()).setValue(account);
+        reff.setValue(account);
 
 
         if (isCarer) {
@@ -337,9 +337,9 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setIsCarer(isCarer);
         account.setEmailAddress(acct.getEmail());
         account.setUserID(acct.getId());
-        account.setCloudID("");
         account.setMobileNumber("");
         account.setHasCarer(false);
+        setFMCToken();
     }
 
     //Needed to read mobile number of users phone
