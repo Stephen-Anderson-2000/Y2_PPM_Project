@@ -171,8 +171,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         CurrentAccount.setCloudID(token);
 
-        DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
-        reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
+       // DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
+       // reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
     }
 
 
@@ -296,7 +296,6 @@ public class WelcomeActivity extends AppCompatActivity {
         String firstName = nameBox.getText().toString();
         String lastName = acct.getFamilyName();
         String email = emailBox.getText().toString();
-        String profileURL = acct.getPhotoUrl().toString();
         boolean isCarer = true;
 
 
@@ -312,12 +311,10 @@ public class WelcomeActivity extends AppCompatActivity {
         account.setLastName(lastName);
         account.setEmailAddress(email);
         account.setIsCarer(isCarer);
-        account.setProfileURL(profileURL);
         account.setUserID(ID);
         account.setHasCarer(false);
+        setFMCToken(); //sets cloud id
         reff.child(acct.getId()).setValue(account);
-
-        setFMCToken();
 
 
         if (isCarer) {
