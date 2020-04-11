@@ -10,7 +10,7 @@
         android:id="@+id/welcomeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:text="@string/welcome_title"
         android:textSize="45sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,12 +22,12 @@
         android:id="@+id/whichAreYouHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="24dp"
         android:text="@string/which_are_you_header"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/welcomeTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/googleSignInButton" />
 
     <ToggleButton
         android:id="@+id/patientToggle"
@@ -89,14 +89,14 @@
         android:id="@+id/okButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="168dp"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="32dp"
         android:text="@string/ok_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameBox"
+        app:layout_constraintTop_toBottomOf="@+id/userEmailBox"
         app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.gms.common.SignInButton
@@ -117,23 +117,20 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/nameBox" />
+        app:layout_constraintTop_toBottomOf="@+id/idBox" />
 
     <EditText
         android:id="@+id/userEmailBox"
         android:layout_width="253dp"
         android:layout_height="43dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
         android:ems="10"
         android:hint="@string/user_email_box"
         android:inputType="textEmailAddress"
         android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/okButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.512"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userEmailTitle"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/userEmailTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -32,6 +32,7 @@ Carer currentCarer;
     private TextView carerNameBox;
     private Button myIDButton;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
+    private Button filePicker;
 
     private boolean messageIsReceived = false;
 
@@ -89,7 +90,7 @@ Carer currentCarer;
         }
     }
 
-    private void displayMessageResultsDialog(final HelpMessage receivedMessage) {
+/*    private void displayMessageResultsDialog(final HelpMessage receivedMessage) {
         messageAlertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
         messageAlertDialog.setTitle("Message For Help Received!");
         messageAlertDialog.setMessage("Patient: " + receivedMessage.getSender().getFirstName() + " " + receivedMessage.getSender().getLastName() +
@@ -105,7 +106,7 @@ Carer currentCarer;
             Log.v(TAG,"Permission is granted");
             return true;
         }
-    }
+    }*/
 
 //    private void displayMessageResultsDialog() {
 //        AlertDialog alertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
@@ -179,6 +180,7 @@ Carer currentCarer;
 //        }
 //    }
 
+/*
 
     private class DisplayPatientLocation extends AsyncTask<URL, Void, String> {
 
@@ -295,6 +297,7 @@ Carer currentCarer;
             }
         }.start();
     }
+*/
 
     private void showIDDialog(){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);

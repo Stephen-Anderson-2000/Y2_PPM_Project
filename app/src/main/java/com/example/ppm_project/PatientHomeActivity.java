@@ -100,7 +100,7 @@ public class PatientHomeActivity extends AppCompatActivity
         makeButtons();
         setupDialogBoxes();
 
-        myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+/*        myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         myLocListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location myLocation) { currentPatient.setPatientLocation(fetchLocation()); }
@@ -113,10 +113,10 @@ public class PatientHomeActivity extends AppCompatActivity
 
             @Override
             public void onProviderDisabled(String provider) { }
-        };
+        };*/
 
-        checkGPSPermissions();
-        checkGPSStatus();
+  //      checkGPSPermissions();
+  //      checkGPSStatus();
 
        // askForCarerName();
 
@@ -324,7 +324,7 @@ public class PatientHomeActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view)
                     {
-                        fetchLocation();
+   //                     fetchLocation();
                         gpsAlertDialog.dismiss();
                     }
                 });
@@ -356,15 +356,15 @@ public class PatientHomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         if (requestCode == 10) {
-            try { new LoadCSVFile().execute(findFilePath(data)); }
-            catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
+  //          try { new LoadCSVFile().execute(findFilePath(data)); }
+    //        catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
         if (requestCode == 15)
         {
             try
             {
                 calibrating = true;
-                new LoadCSVFile().execute(findFilePath(data));
+ //               new LoadCSVFile().execute(findFilePath(data));
             }
             catch (Exception e) { Log.v(TAG, "Caught exception when loading .csv", e); calibrating = false; }
         }
@@ -388,7 +388,7 @@ public class PatientHomeActivity extends AppCompatActivity
         switch (requestCode)
         {
             case 1:
-                currentPatient.setPatientLocation(fetchLocation());
+ //               currentPatient.setPatientLocation(fetchLocation());
                 break;
             default:
                 break;
@@ -401,7 +401,8 @@ public class PatientHomeActivity extends AppCompatActivity
         startActivity(intent);
     }
 //TODO needs changing to work with new account system: can now get carer details by calling CurrentCarer.getFirstName() etc
-    public void sendHelp()
+
+/*    public void sendHelp()
     {
         try
         {
@@ -593,7 +594,7 @@ public class PatientHomeActivity extends AppCompatActivity
         protected void onPostExecute(String urlPlusCode) {
             currentPatient.setPatientPlusCode(urlPlusCode);
         }
-    }
+    }*/
 
 }
 

@@ -101,7 +101,6 @@ public class WelcomeActivity extends AppCompatActivity {
         patientToggle.setOnCheckedChangeListener(changeChecker);
         carerToggle.setOnCheckedChangeListener(changeChecker);
 
-        nameBox = (EditText) findViewById(R.id.nameBox);
         emailBox = (EditText) findViewById(R.id.userEmailBox);
 
         ok = (Button) findViewById(R.id.okButton);
@@ -111,8 +110,8 @@ public class WelcomeActivity extends AppCompatActivity {
         reff.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    maxid= (dataSnapshot.getChildrenCount());
+                if (dataSnapshot.exists()) {
+                    maxid = (dataSnapshot.getChildrenCount());
 
                 }
             }
@@ -171,8 +170,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         CurrentAccount.setCloudID(token);
 
-       DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
-       reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
+        DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
+        reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
 
     }
 
@@ -231,11 +230,10 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             });
 
-    } catch (ApiException e) {
+        } catch (ApiException e) {
 
+        }
     }
-    }
-
 
 
     private void setCredentials() {
@@ -298,24 +296,24 @@ public class WelcomeActivity extends AppCompatActivity {
         String email = emailBox.getText().toString();
         boolean isCarer = true;
 
-
-    static Account getAccountDetails() {
-        return account;
     }
+        static Account getAccountDetails() {
+            return account;
+        }
 
-    private void setAccountDetails(boolean isCarer, GoogleSignInAccount acct) {
-        account = new Account();
-        account.setFirstName(acct.getGivenName());
-        account.setLastName(acct.getFamilyName());
-        account.setIsCarer(isCarer);
-        account.setEmailAddress(acct.getEmail());
-        account.setUserID(acct.getId());
-        account.setMobileNumber("");
-        account.setHasCarer(false);
-        setFMCToken();
-    }
+        private void setAccountDetails ( boolean isCarer, GoogleSignInAccount acct){
+            account = new Account();
+            account.setFirstName(acct.getGivenName());
+            account.setLastName(acct.getFamilyName());
+            account.setIsCarer(isCarer);
+            account.setEmailAddress(acct.getEmail());
+            account.setUserID(acct.getId());
+            account.setMobileNumber("");
+            account.setHasCarer(false);
+            setFMCToken();
+        }
 
-    //Needed to read mobile number of users phone
+        //Needed to read mobile number of users phone
     /*
     private String getMobileNumber() {
         String mPhoneNumber = null;
@@ -352,9 +350,8 @@ public class WelcomeActivity extends AppCompatActivity {
     } */
 
 
-
-
     }
+
 
 
 
