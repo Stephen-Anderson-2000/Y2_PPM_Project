@@ -171,8 +171,8 @@ public class WelcomeActivity extends AppCompatActivity {
 
         CurrentAccount.setCloudID(token);
 
-       // DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
-       // reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
+       DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
+       reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
     }
 
 
