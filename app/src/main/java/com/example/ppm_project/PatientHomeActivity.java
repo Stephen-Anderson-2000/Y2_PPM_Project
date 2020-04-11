@@ -1,7 +1,15 @@
 package com.example.ppm_project;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.opencsv.CSVReader;
 import android.Manifest;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,17 +22,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
-
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -36,6 +53,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.HttpHeaders;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class PatientHomeActivity extends AppCompatActivity
 {
@@ -59,17 +79,23 @@ public class PatientHomeActivity extends AppCompatActivity
     AlertDialog calibrationDialog;
     AccountList theAccounts = new AccountList();
     Patient currentPatient;
+    private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
+    private static Carer CurrentCarer = CarerInfoActivity.getAccountDetails();
+    public static PatientHomeActivity PatientHomeActivity;
+    private String currentCarerToken = "";
+    private DatabaseReference reff;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-
         CurrentUserID currentUserID = new CurrentUserID();
         currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
+
+        PatientHomeActivity = this;
 
         makeButtons();
         setupDialogBoxes();
@@ -91,6 +117,115 @@ public class PatientHomeActivity extends AppCompatActivity
 
         checkGPSPermissions();
         checkGPSStatus();
+
+       // askForCarerName();
+
+    }
+
+    private void askForCarerName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter your current carers ID Number");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                getCarerToken(input.getText().toString());
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void getCarerToken(String carerNumber) {
+        reff = FirebaseDatabase.getInstance().getReference("account").child(carerNumber);
+
+        reff.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentCarerToken = dataSnapshot.child("cloudID").getValue().toString();
+                Log.i(TAG, "Carers FCM Token: " + currentCarerToken);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void alertCarer() {
+        if(CurrentAccount.getHasCarer()) {
+            final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
+            Dialog.setMessage("Sending Help Message...");
+            Dialog.setCancelable(false);
+            Dialog.show();
+
+            String url = "https://fcm.googleapis.com/fcm/send";
+            AsyncHttpClient client = new AsyncHttpClient();
+
+            client.addHeader(HttpHeaders.AUTHORIZATION, "key=AIzaSyCNIcgHOV7t3I-u9arDqmBSQj34oiiofoo");
+            client.addHeader(HttpHeaders.CONTENT_TYPE, RequestParams.APPLICATION_JSON);
+
+            try {
+                JSONObject params = new JSONObject();
+
+                JSONArray registration_ids = new JSONArray();
+                registration_ids.put(CurrentCarer.getCloudID());
+
+                params.put("registration_ids", registration_ids);
+
+                JSONObject notificationObject = new JSONObject();
+                notificationObject.put("body", "Patient Needs help!");
+                notificationObject.put("title", "Alert");
+
+                params.put("notification", notificationObject);
+
+                StringEntity entity = new StringEntity(params.toString());
+
+                client.post(getApplicationContext(), url, entity, RequestParams.APPLICATION_JSON, new TextHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString, Throwable throwable) {
+                        Dialog.dismiss();
+                        Log.i(TAG, responseString);
+                    }
+
+                    @Override
+                    public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, String responseString) {
+                        Dialog.dismiss();
+                        Log.i(TAG, responseString);
+                    }
+                });
+
+            } catch (Exception e) {
+
+            }
+        }
+        else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("No Carer");
+            alert.setMessage("It seems that you havent set up a carer yet! Click the carer button and enter your carers ID which can be found on their app");
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            alert.create().show();
+        }
     }
 
     public void makeButtons()
@@ -102,7 +237,7 @@ public class PatientHomeActivity extends AppCompatActivity
         helpButton = (Button) findViewById(R.id.helpButton);
         calibrateButton = (Button) findViewById(R.id.calibrateButton);
         userNameBox = findViewById(R.id.patientNameBox);
-        userNameBox.setText(currentPatient.getFirstName());
+        userNameBox.setText(CurrentAccount.getFirstName());
 
         filePicker.setOnClickListener(new View.OnClickListener()
         {
@@ -133,7 +268,8 @@ public class PatientHomeActivity extends AppCompatActivity
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendHelp();
+                //sendHelp();
+                alertCarer();
             }
         });
 
@@ -264,7 +400,7 @@ public class PatientHomeActivity extends AppCompatActivity
         Intent intent = new Intent(this, CarerInfoActivity.class);
         startActivity(intent);
     }
-
+//TODO needs changing to work with new account system: can now get carer details by calling CurrentCarer.getFirstName() etc
     public void sendHelp()
     {
         try
@@ -277,22 +413,23 @@ public class PatientHomeActivity extends AppCompatActivity
                 new SetPlusCode().execute(gpsURL);
 
                 currentPatient.sendHelpMessage();
-                if (currentPatient.getPatientLocation() != null && currentPatient.getPatientPlusCode() != null)
-                {
-                    messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
-                            "\n\nTheir GPS location is: " + currentPatient.getPatientLocation() + "\n\n Their plus code is: " + currentPatient.getPatientPlusCode().substring(19));
+
+               // if (currentPatient.getPatientLocation() != null && currentPatient.getPatientPlusCode() != null)
+               // {
+                //    messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
+                        //    "\n\nTheir GPS location is: " + currentPatient.getPatientLocation() + "\n\n Their plus code is: " + currentPatient.getPatientPlusCode().substring(19));
                     // substring start index is 19 to remove the rest of the plus code's url
-                }
-                else
-                {
-                    messageAlertDialog.setMessage("Currently locations are null, will take a few seconds to update. Message sent anyway.");
-                }
-                messageAlertDialog.show();
-            }
-            else
-            {
-                checkGPSStatus();
-            }
+              //  }
+              //  else
+              //  {
+               //     messageAlertDialog.setMessage("Currently locations are null, will take a few seconds to update. Message sent anyway.");
+              //  }
+              //  messageAlertDialog.show();
+          //  }
+         //   else
+          //  {
+            //    checkGPSStatus();
+           // }
         }
         catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
         catch (MalformedURLException e) {Log.e(TAG, "Error making gps url", e); }

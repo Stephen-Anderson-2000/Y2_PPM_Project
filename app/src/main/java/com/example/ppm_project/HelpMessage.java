@@ -21,6 +21,6 @@ public class HelpMessage{
 
     public void sendHelpMessage()
     {
-        recipient.receiveMessage(this);
+      //  recipient.receiveMessage(this);
     }
 }

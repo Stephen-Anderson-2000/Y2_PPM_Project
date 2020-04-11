@@ -33,8 +33,8 @@ public class Patient extends Account {
         HelpMessage newMessage = new HelpMessage();
         newMessage.setSender(this);
         newMessage.setRecipient(theCarer);
-        newMessage.setSenderLocation(patientPlusCodeURL);
-        theCarer.receiveMessage(newMessage);
+        newMessage.setSenderLocation(patientLocation);
+       // theCarer.receiveMessage(newMessage);
     }
 
 }

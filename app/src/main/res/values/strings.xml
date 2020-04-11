@@ -15,6 +15,9 @@
     <string name="carer_toggle">CARER</string>
     <string name="this_is_title">THIS IS</string>
     <string name="carer_details_button">CARER DETAILS</string>
-    <string name="user_id_header">USER ID</string>
+    <string name="user_name_header">USER NAME</string>
     <string name="default_id_box_value">PLEASE ENTER YOUR USER ID HERE</string>
+    <string name="user_email_header">USER EMAIL</string>
+    <string name="user_email_box">PLEASE ENTER YOUR EMAIL</string>
+    <string name="my_ID_Button">MY ID</string>
 </resources>
