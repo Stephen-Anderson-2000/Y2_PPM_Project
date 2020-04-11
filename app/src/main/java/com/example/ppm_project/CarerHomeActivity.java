@@ -3,16 +3,9 @@ package com.example.ppm_project;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,22 +23,17 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 public class CarerHomeActivity extends AppCompatActivity {
-    public String  actualFilePath="";
+    AlertDialog messageAlertDialog;
 
     String TAG = "CarerHomeActivity";
 Carer currentCarer;
     AccountList theAccounts = new AccountList();
 
-    TextView textPath;
-    Button filePicker;
-
-    private ArrayList<Double> xArray = new ArrayList<>();
-    private ArrayList<Double> yArray = new ArrayList<>();
-    private ArrayList<Double> zArray = new ArrayList<>();
-    private Boolean fileRead = false;
     private TextView carerNameBox;
     private Button myIDButton;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
+
+    private boolean messageIsReceived = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +41,10 @@ Carer currentCarer;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.carer_home);
 
-        textPath = findViewById(R.id.filePath); //TEMP
         carerNameBox = findViewById(R.id.carerNameBox);
         filePicker = findViewById(R.id.researchDataButton);
         myIDButton = (Button)findViewById(R.id.myIDButton);
 
-        getCurrentUser();
         filePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,7 +53,6 @@ Carer currentCarer;
                 startActivityForResult(fileIntent, 10);
             }
         });
-
         //GUI Button initialisation and event listener
         Button whatIsThisButton = (Button) findViewById(R.id.whatIsThisButton);
 
@@ -85,7 +70,6 @@ Carer currentCarer;
             }
         });
 
-
         carerNameBox.setText(CurrentAccount.getFirstName());
 
    /*     Thread checkReceivedThread = new Thread(new CheckMessageReceived(currentCarer));
@@ -101,68 +85,20 @@ Carer currentCarer;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == 10) {
-            Uri uri = data.getData();
-            File file = new File(uri.getPath());//create path from uri
-            final String[] split = file.getPath().split(":");//split the path.
-            actualFilePath = split[1];
 
-            ReadCSV csvReader = new ReadCSV();
-            textPath.setText(readFile(actualFilePath));
-
-            AlertDialog alertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
-            alertDialog.setTitle("Alert");
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-
-                }
-            });
         }
     }
 
-    public String readFile(String actualFilePath) {
-        StringBuilder allData = new StringBuilder();
-        try {
-            if (isReadStoragePermissionGranted()) {
-                try {
-                    String row;
-                    BufferedReader csvReader = new BufferedReader(new FileReader(actualFilePath));
-                    csvReader.readLine();
-                    while ((row = csvReader.readLine()) != null) {
-                        String[] csvData = row.split(",");
-                        xArray.add(Double.valueOf(csvData[3]));
-                        yArray.add(Double.valueOf(csvData[4]));
-                        zArray.add(Double.valueOf(csvData[5]));
-
-                        for (int i = 3; i < csvData.length; i++) {
-                            allData.append(csvData[i]).append("  ");
-                        }
-                        allData.append("\n");
-                        fileRead = true;
-                    }
-                } catch (java.io.IOException s) {
-                    System.out.println(s.getMessage());
-                }
-            }
-            return allData.toString();
-        } catch (Exception e) {
-            System.out.println("Caught exception: " + e);
-            return "";
-        }
-    }
-
-    private boolean isReadStoragePermissionGranted() {
-        String TAG = "ReadCSV";
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted");
-                return true;
-            } else {
-
-                Log.v(TAG,"Permission is revoked");
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
-                return false;
+    private void displayMessageResultsDialog(final HelpMessage receivedMessage) {
+        messageAlertDialog = new AlertDialog.Builder(CarerHomeActivity.this).create();
+        messageAlertDialog.setTitle("Message For Help Received!");
+        messageAlertDialog.setMessage("Patient: " + receivedMessage.getSender().getFirstName() + " " + receivedMessage.getSender().getLastName() +
+                " is in distress! \nThey are currently at plus code: " + receivedMessage.getSenderLocation().substring(19) + "\n\n\nOpen their location on Google Maps?");
+        messageAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                openPatientLocation(receivedMessage.getSenderLocation());
+                dialog.dismiss();
+                messageIsReceived = false;
             }
         }
         else { //permission is automatically granted on sdk<23 upon installation
@@ -294,12 +230,70 @@ Carer currentCarer;
             mapIntent.setPackage("com.google.android.apps.maps");
             if (mapIntent.resolveActivity(getPackageManager()) != null) {
                 startActivity(mapIntent);
+        });
+        messageAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                messageIsReceived = false;
             }
+        });
+
+    }
+
+    private void openPatientLocation(String patientPlusCodeUrl) {
+        try
+        {
+            if (patientPlusCodeUrl != null) {
+                //URL theURL = new URL("https://plus.codes/api?address=" + patientLocation.getLatitude() + "," + patientLocation.getLongitude());
+                //new DisplayPatientLocation().execute(patientPlusCodeUrl);
+                Uri gmmIntentUri = Uri.parse(patientPlusCodeUrl);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.out.println(ex);
         }
     }
 
-    private void getCurrentUser(){
+    private void checkMessageReceived() {
 
+        new Thread()
+        {
+            public void run()
+            {
+                while (true)
+                {
+                    try
+                    {
+                        HelpMessage receivedMessage = currentCarer.getTheReceivedMessage();
+                        if (receivedMessage != null && !messageIsReceived)
+                        {
+                            System.out.println("Received the help message from " + receivedMessage.getSender().getFirstName());
+                            messageIsReceived = true;
+                            try
+                            {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        displayMessageResultsDialog(currentCarer.getTheReceivedMessage());
+                                        messageAlertDialog.show();
+                                    }
+                                });
+                            }
+                            catch (Exception e) { Log.e(TAG, "Caught exception when trying to show message alert dialog", e); }
+                            break;
+                        }
+                        Thread.sleep(5000);
+                    }
+                    catch (InterruptedException e) { }
+                }
+            }
+        }.start();
     }
 
     private void showIDDialog(){
@@ -314,7 +308,6 @@ Carer currentCarer;
         });
         alert.create().show();
     }
-
 
 }
 

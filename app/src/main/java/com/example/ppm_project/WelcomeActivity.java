@@ -30,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -72,8 +73,6 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        // makePatientsCarers();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
 
@@ -114,6 +113,7 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     maxid= (dataSnapshot.getChildrenCount());
+
                 }
             }
 
@@ -173,6 +173,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
        DatabaseReference reff = FirebaseDatabase.getInstance().getReference().child("account");
        reff.child(CurrentAccount.getUserID()).setValue(CurrentAccount);
+
     }
 
 
@@ -255,7 +256,6 @@ public class WelcomeActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
 
-
                         } else {
 
                         }
@@ -297,33 +297,6 @@ public class WelcomeActivity extends AppCompatActivity {
         String lastName = acct.getFamilyName();
         String email = emailBox.getText().toString();
         boolean isCarer = true;
-
-
-
-        if (carerToggle.isChecked()) {
-            isCarer = true;
-        } else {
-            isCarer = false;
-        }
-
-        account = new Account();
-        account.setFirstName(firstName);
-        account.setLastName(lastName);
-        account.setEmailAddress(email);
-        account.setIsCarer(isCarer);
-        account.setUserID(ID);
-        account.setHasCarer(false);
-        setFMCToken(); //sets cloud id
-        reff.setValue(account);
-
-
-        if (isCarer) {
-            openCarerHomeActivity();
-        } else {
-            openPatientHomeActivity();
-        }
-
-    }
 
 
     static Account getAccountDetails() {

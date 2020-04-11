@@ -22,7 +22,7 @@ public class Calibration {
     //Calculates the variance using the calcVariance function found in AccelerationData.java
     //Variance is calculated every ten seconds, and then added to a variance array.
     //We will take the 95th percentile from this array.
-    public double[] getVarArray (ArrayList<Double> s, ArrayList<Double> magnitudeOfAccel) {
+    public ArrayList<Double> getVarArray (ArrayList<Double> s, ArrayList<Double> magnitudeOfAccel) {
         int lastStop = 0;
         int nextStop = 10;
         ArrayList<Double> variances = new ArrayList<>();
@@ -40,8 +40,10 @@ public class Calibration {
                 nextStop = nextStop + 10;
                 lastStop = lastStop + 10;
 
-                if (nextStop < magnitudeOfAccel.size()) {
-                    variances.add(varCalculator.calcVariance(magnitudeOfAccel, lastStop, nextStop));
+                int maxIndex = (magnitudeOfAccel.size() - (magnitudeOfAccel.size() % 1000)) / 100;
+
+                if (nextStop < maxIndex) {
+                    variances.add(varCalculator.calcVariance(magnitudeOfAccel, lastStop * 100, nextStop * 100));
                 }
             }
 
@@ -52,7 +54,7 @@ public class Calibration {
 
         System.out.println(variances);
 
-        return(sortVarArray(variances));
+        return(variances);
     }
 
     // Sorts the array from the getVarArray function in ascending order.
@@ -75,11 +77,13 @@ public class Calibration {
         ArrayList<Double> magnitudeOfAccel = new ArrayList<>();
 
         for (int i = 0; i < x.size() - 1; i++) {
-            double toBeInserted = Math.sqrt((x.get(i)*x.get(i)) + (y.get(i)*y.get(i)) + (z.get(i)*z.get(i)));
+            double toBeInserted = Math.sqrt((x.get(i) * x.get(i)) + (y.get(i) * y.get(i)) + (z.get(i) * z.get(i)));
             magnitudeOfAccel.add(toBeInserted);
         }
 
         return(magnitudeOfAccel);
     }
+
+
 
 }

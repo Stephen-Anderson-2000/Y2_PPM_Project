@@ -72,14 +72,14 @@
         app:layout_constraintTop_toBottomOf="@+id/patientToggle" />
 
     <EditText
-        android:id="@+id/nameBox"
+        android:id="@+id/idBox"
         android:layout_width="257dp"
         android:layout_height="44dp"
         android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="@string/default_id_box_value"
         android:importantForAutofill="no"
-        android:inputType="textShortMessage"
+        android:inputType="number"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

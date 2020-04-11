@@ -2,8 +2,11 @@ package com.example.ppm_project;
 
 import android.location.Location;
 
+import java.net.URL;
+
 public class Patient extends Account {
     private Location patientLocation;
+    private String patientPlusCodeURL;
     private Carer theCarer;
     private boolean isInDistress = false;
     private double thresholdValue;
@@ -11,10 +14,12 @@ public class Patient extends Account {
     public void setPatientLocation(Location patientLocation) { this.patientLocation = patientLocation; }
     public void setTheCarer(Carer newCarer) { this.theCarer = newCarer; }
     public void setThresholdValue(double givenThreshold) {this.thresholdValue = givenThreshold; }
+    public void setPatientPlusCode(String plusCodeUrl) { this.patientPlusCodeURL = plusCodeUrl; }
 
     public Location getPatientLocation() { return patientLocation; }
     public Carer getTheCarer() { return theCarer; }
     public double getThresholdValue() {return thresholdValue; }
+    public String getPatientPlusCode() { return patientPlusCodeURL; }
 
     public boolean checkInDistress()
     {
