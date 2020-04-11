@@ -1,33 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.ppm_project">
+    package="com.example.ppm_project" >
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_SMS"/>
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
+    <uses-permission android:name = "android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name = "android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name = "android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name = "android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
-        android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:largeHeap="true"
+        android:hardwareAccelerated="false" >
 
-        <service android:name=".MyFirebaseMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <activity
-            android:name=".WelcomeActivity"
+        <activity android:name=".WelcomeActivity"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,11 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CarerHomeActivity" />
-        <activity android:name=".PatientHomeActivity" />
-        <activity android:name=".CarerInfoActivity" />
-        <activity android:name=".whatIsThisPopUpActivity" />
-        <activity android:name=".helpPopUpActivity" />
+        <activity android:name=".CarerHomeActivity" ></activity>
+        <activity android:name=".PatientHomeActivity" ></activity>
+        <activity android:name=".CarerInfoActivity"></activity>
+        <activity android:name=".whatIsThisPopUpActivity"></activity>
+        <activity android:name=".helpPopUpActivity"></activity>
     </application>
 
 </manifest>
