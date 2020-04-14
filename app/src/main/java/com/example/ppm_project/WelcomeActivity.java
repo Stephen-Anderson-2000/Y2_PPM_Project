@@ -102,6 +102,7 @@ public class WelcomeActivity extends AppCompatActivity {
         carerToggle.setOnCheckedChangeListener(changeChecker);
 
         emailBox = (EditText) findViewById(R.id.userEmailBox);
+        nameBox = (EditText)findViewById(R.id.nameBox);
 
         ok = (Button) findViewById(R.id.okButton);
 
@@ -296,7 +297,33 @@ public class WelcomeActivity extends AppCompatActivity {
         String email = emailBox.getText().toString();
         boolean isCarer = true;
 
+
+
+        if (carerToggle.isChecked()) {
+            isCarer = true;
+        } else {
+            isCarer = false;
+        }
+
+        account = new Account();
+        account.setFirstName(firstName);
+        account.setLastName(lastName);
+        account.setEmailAddress(email);
+        account.setIsCarer(isCarer);
+        account.setUserID(ID);
+        account.setHasCarer(false);
+        setFMCToken(); //sets cloud id
+        reff.setValue(account);
+
+
+        if (isCarer) {
+            openCarerHomeActivity();
+        } else {
+            openPatientHomeActivity();
+        }
+
     }
+
         static Account getAccountDetails() {
             return account;
         }
