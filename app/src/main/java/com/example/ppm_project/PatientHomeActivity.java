@@ -78,9 +78,9 @@ public class PatientHomeActivity extends AppCompatActivity
     AlertDialog loadingFileDialog;
     AlertDialog calibrationDialog;
     AccountList theAccounts = new AccountList();
-    Patient currentPatient;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
     private static Carer CurrentCarer = CarerInfoActivity.getAccountDetails();
+    Patient currentPatient;
     public static PatientHomeActivity PatientHomeActivity;
     private String currentCarerToken = "";
     private DatabaseReference reff;
@@ -89,8 +89,10 @@ public class PatientHomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        CurrentUserID currentUserID = new CurrentUserID();
-        currentPatient = theAccounts.getPatientByID(currentUserID.getTheUser());
+        //CurrentUserID currentUserID = new CurrentUserID();
+        currentPatient = new Patient(CurrentAccount);
+
+        System.out.println(currentPatient);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
@@ -364,7 +366,7 @@ public class PatientHomeActivity extends AppCompatActivity
             try
             {
                 calibrating = true;
- //               new LoadCSVFile().execute(findFilePath(data));
+                new LoadCSVFile().execute(findFilePath(data));
             }
             catch (Exception e) { Log.v(TAG, "Caught exception when loading .csv", e); calibrating = false; }
         }
@@ -447,6 +449,8 @@ public class PatientHomeActivity extends AppCompatActivity
         return null;
     }
 
+*/
+
     private void checkGPSPermissions()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -460,6 +464,18 @@ public class PatientHomeActivity extends AppCompatActivity
     }
 
     private void checkGPSStatus() { if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); } }
+
+    private void getFilePermissions()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+        }
+    }
 
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
         String TAG = "LoadCSVFiles Class";
@@ -520,7 +536,6 @@ public class PatientHomeActivity extends AppCompatActivity
                     Calibration calTest = new Calibration();
 
                     currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.sortVarArray(calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)))));
-                    System.out.println("The new threshold: " + currentPatient.getThresholdValue());
 
                     loadingFileDialog.hide();
 
@@ -534,7 +549,7 @@ public class PatientHomeActivity extends AppCompatActivity
                     if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
                         messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
                         messageAlertDialog.show();
-                        sendHelp();
+                        //sendHelp();
                     } else {
                         messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
                         messageAlertDialog.show();
@@ -548,35 +563,33 @@ public class PatientHomeActivity extends AppCompatActivity
         }
     }
 
+/*
     private class SetPlusCode extends AsyncTask<URL, Void, String> {
 
         String TAG = "PlusCodeClass";
 
         @Override
-        protected String doInBackground(URL... theURL)
-        {
+        protected String doInBackground(URL... theURL) {
             try {
                 JSONObject plusCodeJSON = getPlusCodeObject(theURL[0]);
                 String urlPlusCode = "https://plus.codes/" + plusCodeJSON.getJSONObject("plus_code").getString("global_code");
                 return urlPlusCode;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Log.e(TAG, "Found exception when parsing JSON", ex);
             }
             return null;
         }
 
-        private JSONObject getPlusCodeObject(URL theURL)
-        {
-            try
-            {
+        private JSONObject getPlusCodeObject(URL theURL) {
+            try {
                 InputStream inStream = theURL.openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
                 String rawJSONString = readStream(reader);
                 return new JSONObject(rawJSONString);
+            } catch (Exception ex) {
+                Log.e(TAG, "Found exception when fetching JSON", ex);
+                return null;
             }
-            catch (Exception ex) { Log.e(TAG, "Found exception when fetching JSON", ex); return null; }
         }
 
 
@@ -594,7 +607,7 @@ public class PatientHomeActivity extends AppCompatActivity
         protected void onPostExecute(String urlPlusCode) {
             currentPatient.setPatientPlusCode(urlPlusCode);
         }
-    }*/
-
+    }
+*/
 }
 
