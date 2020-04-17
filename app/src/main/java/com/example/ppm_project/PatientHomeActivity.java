@@ -173,6 +173,8 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private void alertCarer() {
         if(CurrentAccount.getHasCarer()) {
+            updatePatientLocation();
+
             final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
             Dialog.setMessage("Sending Help Message...");
             Dialog.setCancelable(false);
@@ -405,6 +407,17 @@ public class PatientHomeActivity extends AppCompatActivity
         startActivity(intent);
     }
 //TODO needs changing to work with new account system: can now get carer details by calling CurrentCarer.getFirstName() etc
+
+    public void updatePatientLocation()
+    {
+        currentPatient.setPatientLocation(fetchLocation());
+        try
+        {
+            URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
+            new SetPlusCode().execute(gpsURL);
+        }
+        catch (java.net.MalformedURLException e) { }
+    }
 
 /*    public void sendHelp()
     {
