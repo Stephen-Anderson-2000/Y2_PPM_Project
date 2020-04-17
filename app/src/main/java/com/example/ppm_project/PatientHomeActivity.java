@@ -193,7 +193,7 @@ public class PatientHomeActivity extends AppCompatActivity
                 params.put("registration_ids", registration_ids);
 
                 JSONObject notificationObject = new JSONObject();
-                notificationObject.put("body", "Patient Needs help!");
+                notificationObject.put("body", "Patient Needs help!\nTheir location is: " + currentPatient.getPatientPlusCode());
                 notificationObject.put("title", "Alert");
 
                 params.put("notification", notificationObject);
@@ -480,7 +480,6 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
         String TAG = "LoadCSVFiles Class";
-
         @Override
         protected void onPreExecute() { loadingFileDialog.show(); }
 
@@ -560,6 +559,14 @@ public class PatientHomeActivity extends AppCompatActivity
                 yArray.clear();
                 zArray.clear();
             }
+            try
+            {
+                currentPatient.setPatientLocation(fetchLocation());
+                URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
+                new SetPlusCode().execute(gpsURL);
+                System.out.println(currentPatient.getPatientPlusCode());
+            }
+            catch (Exception e) { }
         }
     }
 
@@ -590,7 +597,6 @@ public class PatientHomeActivity extends AppCompatActivity
                 return null;
             }
         }
-
 
         private String readStream(Reader rd) throws IOException {
 
