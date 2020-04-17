@@ -91,6 +91,7 @@ public class PatientHomeActivity extends AppCompatActivity
 
         checkGPSPermissions();
         checkGPSStatus();
+        checkFilePermissions();
     }
 
     public void makeButtons()
@@ -323,6 +324,18 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private void checkGPSStatus() { if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); } }
 
+    private void checkFilePermissions()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            }
+        }
+    }
+
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
         String TAG = "LoadCSVFiles Class";
 
@@ -337,7 +350,7 @@ public class PatientHomeActivity extends AppCompatActivity
         }
 
         private void readFile(String filePath) {
-            StringBuilder allData = new StringBuilder();
+            //StringBuilder allData = new StringBuilder();
             try
             {
                 if (filePath != "" && filePath != null)
@@ -364,7 +377,6 @@ public class PatientHomeActivity extends AppCompatActivity
                         System.out.println(s.getMessage());
                     }
                 }
-                else { loadingFileDialog.hide(); }
             }
             catch (Exception e) { Log.v(TAG, "Caught exception in readFile()", e); }
         }
@@ -372,7 +384,7 @@ public class PatientHomeActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String filePath)
         {
-            if (filePath != "" && filePath != null)
+            if (filePath != "" && filePath != null && sArray.size() != 0)
             {
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 accDat.setVals(sArray, xArray, yArray, zArray);
@@ -382,7 +394,6 @@ public class PatientHomeActivity extends AppCompatActivity
                     Calibration calTest = new Calibration();
 
                     currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.sortVarArray(calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)))));
-                    System.out.println("The new threshold: " + currentPatient.getThresholdValue());
 
                     loadingFileDialog.hide();
 
