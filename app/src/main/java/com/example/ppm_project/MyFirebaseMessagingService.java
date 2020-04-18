@@ -38,21 +38,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-        }
+            String messageBody = remoteMessage.getData().get("text");
+            Log.d(TAG, "Message data payload: " + messageBody);
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            String messageBody = remoteMessage.getNotification().getBody();
-            Uri plusCodeURL = remoteMessage.getNotification().getLink();
-            Log.d(TAG, "Message Notification Body: " + messageBody);
+            Uri plusCodeURL = null;
+            if (remoteMessage.getData().get("link") != null) {
+                plusCodeURL = Uri.parse(remoteMessage.getData().get("link"));
+            } else {
+                Log.d(TAG, "No Location data found...");
+            }
 
             sendNotification(messageBody, plusCodeURL);
         }
     }
 
     private void sendNotification(String messageBody, Uri plusCodeURL) {
-        //Intent intent = new Intent(this, MainActivity.class);
+
         Intent intent = new Intent(Intent.ACTION_VIEW, plusCodeURL);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -75,8 +76,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
+                    "Help",
+                    NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(channel);
         }
 

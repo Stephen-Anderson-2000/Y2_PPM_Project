@@ -41,14 +41,6 @@
         <activity android:name=".whatIsThisPopUpActivity" />
         <activity android:name=".helpPopUpActivity" />
 
-        <activity
-            android:name=".NotificationClick">
-            <intent-filter>
-                <action android:name=".Services.NotificationClick" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
     </application>
 
 </manifest>
