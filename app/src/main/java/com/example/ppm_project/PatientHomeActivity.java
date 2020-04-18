@@ -180,9 +180,8 @@ public class PatientHomeActivity extends AppCompatActivity
     }
 
     private void alertCarer() {
+        updatePatientLocation();
         if(CurrentAccount.getHasCarer()) {
-            updatePatientLocation();
-
             final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
             Dialog.setMessage("Sending Help Message...");
             Dialog.setCancelable(false);
