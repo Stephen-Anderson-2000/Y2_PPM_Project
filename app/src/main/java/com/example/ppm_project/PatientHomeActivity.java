@@ -124,6 +124,7 @@ public class PatientHomeActivity extends AppCompatActivity
 
     }
 
+    /*
     private void askForCarerName() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter your current carers ID Number");
@@ -167,6 +168,13 @@ public class PatientHomeActivity extends AppCompatActivity
 
             }
         });
+    }
+    */
+
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus)
+            CurrentCarer = CarerInfoActivity.getAccountDetails();
     }
 
     private void alertCarer() {
@@ -213,13 +221,13 @@ public class PatientHomeActivity extends AppCompatActivity
                 });
 
             } catch (Exception e) {
-
+                Log.i(TAG, e.getMessage());
             }
         }
         else {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle("No Carer");
-            alert.setMessage("It seems that you havent set up a carer yet! Click the carer button and enter your carers ID which can be found on their app");
+            alert.setMessage("It seems that you haven't set up a carer yet! Click the carer button and enter your carers ID which can be found on their app");
             alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
