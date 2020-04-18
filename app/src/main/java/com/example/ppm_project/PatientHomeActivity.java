@@ -77,7 +77,6 @@ public class PatientHomeActivity extends AppCompatActivity
     AlertDialog gpsAlertDialog;
     AlertDialog loadingFileDialog;
     AlertDialog calibrationDialog;
-    AccountList theAccounts = new AccountList();
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
     private static Carer CurrentCarer = CarerInfoActivity.getAccountDetails();
     Patient currentPatient;
@@ -102,7 +101,9 @@ public class PatientHomeActivity extends AppCompatActivity
         makeButtons();
         setupDialogBoxes();
 
-/*        myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+
+        myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         myLocListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location myLocation) { currentPatient.setPatientLocation(fetchLocation()); }
@@ -115,10 +116,11 @@ public class PatientHomeActivity extends AppCompatActivity
 
             @Override
             public void onProviderDisabled(String provider) { }
-        };*/
+        };
 
-  //      checkGPSPermissions();
-  //      checkGPSStatus();
+        getGPSPermissions();
+        checkGPSStatus();
+        getFilePermissions();
 
        // askForCarerName();
 
@@ -179,6 +181,8 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private void alertCarer() {
         if(CurrentAccount.getHasCarer()) {
+            updatePatientLocation();
+
             final ProgressDialog Dialog = new ProgressDialog(PatientHomeActivity);
             Dialog.setMessage("Sending Help Message...");
             Dialog.setCancelable(false);
@@ -199,7 +203,7 @@ public class PatientHomeActivity extends AppCompatActivity
                 params.put("registration_ids", registration_ids);
 
                 JSONObject notificationObject = new JSONObject();
-                notificationObject.put("body", "Patient Needs help!");
+                notificationObject.put("body", "Patient Needs help!\nTheir location is: " + currentPatient.getPatientPlusCode());
                 notificationObject.put("title", "Alert");
 
                 params.put("notification", notificationObject);
@@ -334,7 +338,7 @@ public class PatientHomeActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view)
                     {
-   //                     fetchLocation();
+                        fetchLocation();
                         gpsAlertDialog.dismiss();
                     }
                 });
@@ -366,8 +370,8 @@ public class PatientHomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
         if (requestCode == 10) {
-  //          try { new LoadCSVFile().execute(findFilePath(data)); }
-    //        catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
+            try { new LoadCSVFile().execute(findFilePath(data)); }
+            catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
         if (requestCode == 15)
         {
@@ -398,7 +402,7 @@ public class PatientHomeActivity extends AppCompatActivity
         switch (requestCode)
         {
             case 1:
- //               currentPatient.setPatientLocation(fetchLocation());
+                currentPatient.setPatientLocation(fetchLocation());
                 break;
             default:
                 break;
@@ -411,6 +415,17 @@ public class PatientHomeActivity extends AppCompatActivity
         startActivity(intent);
     }
 //TODO needs changing to work with new account system: can now get carer details by calling CurrentCarer.getFirstName() etc
+
+    public void updatePatientLocation()
+    {
+        currentPatient.setPatientLocation(fetchLocation());
+        try
+        {
+            URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
+            new SetPlusCode().execute(gpsURL);
+        }
+        catch (java.net.MalformedURLException e) { }
+    }
 
 /*    public void sendHelp()
     {
@@ -445,6 +460,7 @@ public class PatientHomeActivity extends AppCompatActivity
         catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
         catch (MalformedURLException e) {Log.e(TAG, "Error making gps url", e); }
     }
+*/
 
     private Location fetchLocation()
     {
@@ -457,9 +473,7 @@ public class PatientHomeActivity extends AppCompatActivity
         return null;
     }
 
-*/
-
-    private void checkGPSPermissions()
+    private void getGPSPermissions()
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
@@ -487,7 +501,6 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
         String TAG = "LoadCSVFiles Class";
-
         @Override
         protected void onPreExecute() { loadingFileDialog.show(); }
 
@@ -499,7 +512,7 @@ public class PatientHomeActivity extends AppCompatActivity
         }
 
         private void readFile(String filePath) {
-            StringBuilder allData = new StringBuilder();
+            //StringBuilder allData = new StringBuilder();
             try
             {
                 if (filePath != "" && filePath != null)
@@ -526,7 +539,6 @@ public class PatientHomeActivity extends AppCompatActivity
                         System.out.println(s.getMessage());
                     }
                 }
-                else { loadingFileDialog.hide(); }
             }
             catch (Exception e) { Log.v(TAG, "Caught exception in readFile()", e); }
         }
@@ -534,7 +546,7 @@ public class PatientHomeActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String filePath)
         {
-            if (filePath != "" && filePath != null)
+            if (filePath != "" && filePath != null && sArray.size() != 0)
             {
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 accDat.setVals(sArray, xArray, yArray, zArray);
@@ -568,10 +580,17 @@ public class PatientHomeActivity extends AppCompatActivity
                 yArray.clear();
                 zArray.clear();
             }
+            try
+            {
+                currentPatient.setPatientLocation(fetchLocation());
+                URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
+                new SetPlusCode().execute(gpsURL);
+                System.out.println(currentPatient.getPatientPlusCode());
+            }
+            catch (Exception e) { }
         }
     }
 
-/*
     private class SetPlusCode extends AsyncTask<URL, Void, String> {
 
         String TAG = "PlusCodeClass";
@@ -600,7 +619,6 @@ public class PatientHomeActivity extends AppCompatActivity
             }
         }
 
-
         private String readStream(Reader rd) throws IOException {
 
             StringBuilder strBuilder = new StringBuilder();
@@ -616,6 +634,6 @@ public class PatientHomeActivity extends AppCompatActivity
             currentPatient.setPatientPlusCode(urlPlusCode);
         }
     }
-*/
+
 }
 

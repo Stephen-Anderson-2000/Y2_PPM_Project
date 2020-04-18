@@ -20,4 +20,8 @@
     <string name="user_email_header">USER EMAIL</string>
     <string name="user_email_box">PLEASE ENTER YOUR EMAIL</string>
     <string name="my_ID_Button">MY ID</string>
+    <string name="what_is_this_explaination_pt1">Welcome to the Carer App created by NTU PPM Group 2020</string>
+    <string name="what_is_this_explaination_pt2">This app is designed to help keep a carer and patient connected remotely so that the carer can fulfil their role of keeping the patient safe and happy.</string>
+    <string name="what_is_this_explaination_pt3">We will alert the connected carer if the patient presses the ‘HELP’ button on their home screen or if the app detects that the patient is lost.</string>
+    <string name="what_is_this_explaination_pt4">To get started the patient should enter the User ID of the carer in the carer menu. To find your carers ID ask the carer to open the ‘my id’ option in the home menu.</string>
 </resources>
