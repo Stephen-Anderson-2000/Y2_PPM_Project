@@ -203,9 +203,10 @@ public class PatientHomeActivity extends AppCompatActivity
                 params.put("registration_ids", registration_ids);
 
                 JSONObject notificationObject = new JSONObject();
-                notificationObject.put("body", "Patient Needs help!\nTheir location is: " + currentPatient.getPatientPlusCode());
+                notificationObject.put("body", "Patient Needs help!");
                 notificationObject.put("title", "Alert");
                 notificationObject.put("click_action", ".Services.NotificationClick");
+                notificationObject.put("link", currentPatient.getPatientPlusCode());
 
                 params.put("notification", notificationObject);
 

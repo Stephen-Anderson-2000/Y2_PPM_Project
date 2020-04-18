@@ -44,15 +44,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             String messageBody = remoteMessage.getNotification().getBody();
+            Uri plusCodeURL = remoteMessage.getNotification().getLink();
             Log.d(TAG, "Message Notification Body: " + messageBody);
 
-            sendNotification(messageBody);
+            sendNotification(messageBody, plusCodeURL);
         }
     }
 
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String messageBody, Uri plusCodeURL) {
         //Intent intent = new Intent(this, MainActivity.class);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, plusCodeURL);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
