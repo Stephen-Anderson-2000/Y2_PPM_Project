@@ -199,12 +199,14 @@ public class PatientHomeActivity extends AppCompatActivity
 
                 JSONArray registration_ids = new JSONArray();
                 registration_ids.put(CurrentCarer.getCloudID());
+                //registration_ids.put("cAOkmSJTcHE:APA91bGZBZBtt1Dac62lu8cR_I50oML3AhyRtndKmD_JllANa60ALQHOWDYj4qoUCu8JnxgU7irOo3he3B7oPihpgDsAQEdMTorwXawA48mDmPygNs_oRd16Mrodppjk6pfIXePT9hsD"); //debug testing
 
                 params.put("registration_ids", registration_ids);
 
                 JSONObject notificationObject = new JSONObject();
                 notificationObject.put("body", "Patient Needs help!\nTheir location is: " + currentPatient.getPatientPlusCode());
                 notificationObject.put("title", "Alert");
+                notificationObject.put("click_action", ".Services.NotificationClick");
 
                 params.put("notification", notificationObject);
 
