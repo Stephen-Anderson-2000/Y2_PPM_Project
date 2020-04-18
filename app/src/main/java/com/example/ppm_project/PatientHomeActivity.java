@@ -423,12 +423,13 @@ public class PatientHomeActivity extends AppCompatActivity
     public void updatePatientLocation()
     {
         currentPatient.setPatientLocation(fetchLocation());
+        System.out.println("Fetching location: " + currentPatient.getPatientLocation());
         try
         {
             URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
             new SetPlusCode().execute(gpsURL);
         }
-        catch (java.net.MalformedURLException e) { }
+        catch (Exception e) { Log.v(TAG, "Caught error in updatePatientLocation", e); }
     }
 
 /*    public void sendHelp()
