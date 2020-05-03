@@ -5,8 +5,6 @@ import android.location.Location;
 public class Patient extends Account {
     private Location patientLocation;
     private String patientPlusCodeURL;
-    private Carer theCarer;
-    private boolean isInDistress = false;
     private double thresholdValue;
 
     public Patient(Account _account)

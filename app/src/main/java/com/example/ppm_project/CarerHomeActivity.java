@@ -5,31 +5,21 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.firebase.database.DatabaseReference;
-
-import org.json.JSONObject;
-import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-
 public class CarerHomeActivity extends AppCompatActivity {
 
+    String TAG = "CarerHomeActivity";
 
     private TextView carerNameBox;
     private Button myIDButton;
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
     private Button filePicker;
 
+    private boolean messageIsReceived = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +57,6 @@ public class CarerHomeActivity extends AppCompatActivity {
         });
 
         carerNameBox.setText(CurrentAccount.getFirstName());
-
     }
 
     @Override

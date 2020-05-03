@@ -1,7 +1,5 @@
 package com.example.ppm_project;
 
-import java.util.ArrayList;
-
 public class Carer {
     private String FirstName;
     private String LastName;
