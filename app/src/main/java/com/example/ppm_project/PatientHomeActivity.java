@@ -572,11 +572,11 @@ public class PatientHomeActivity extends AppCompatActivity
                 {
                     loadingFileDialog.hide();
                     if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
-                        messageAlertDialog.setMessage("PATIENT IS LIKELY HAVING AN EPISODE!");
+                        messageAlertDialog.setMessage("Help message has been sent to the carer.");
                         messageAlertDialog.show();
-                        //sendHelp();
+                        alertCarer();
                     } else {
-                        messageAlertDialog.setMessage("Patient is showing no signs of an episode.");
+                        messageAlertDialog.setMessage("No episode detected.");
                         messageAlertDialog.show();
                     }
                 }
