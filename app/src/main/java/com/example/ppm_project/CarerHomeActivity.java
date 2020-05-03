@@ -19,8 +19,6 @@ public class CarerHomeActivity extends AppCompatActivity {
     private static Account CurrentAccount = WelcomeActivity.getAccountDetails();
     private Button filePicker;
 
-    private boolean messageIsReceived = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 

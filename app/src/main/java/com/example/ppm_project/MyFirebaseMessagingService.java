@@ -36,6 +36,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String messageBody = remoteMessage.getData().get("text");
             Log.d(TAG, "Message data payload: " + messageBody);
 
+            // Fetches the plus code data from the notification and uses it to make an intent
+            // that is designed to open Google Maps with a pin at the desired location
             Uri plusCodeURL = null;
             if (remoteMessage.getData().get("link") != null) {
                 plusCodeURL = Uri.parse(remoteMessage.getData().get("link"));
@@ -48,7 +50,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void sendNotification(String messageBody, Uri plusCodeURL) {
-
+        // Uses the intent from the message to open Google Maps
         Intent intent = new Intent(Intent.ACTION_VIEW, plusCodeURL);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,

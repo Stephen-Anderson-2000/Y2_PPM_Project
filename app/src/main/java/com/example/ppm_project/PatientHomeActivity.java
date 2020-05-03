@@ -73,21 +73,19 @@ public class PatientHomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        //CurrentUserID currentUserID = new CurrentUserID();
+        // Creates a local Patient object based on the information from the database
         currentPatient = new Patient(CurrentAccount);
-
-        System.out.println(currentPatient);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.patient_home);
 
         PatientHomeActivity = this;
 
+        // Creates the button interactions and the dialog boxes that the user interacts with
         makeButtons();
         setupDialogBoxes();
 
-
-
+        // Makes the location manage and location listener which are designed to handle GPS updates
         myLocManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         myLocListener = new LocationListener() {
             @Override
@@ -103,10 +101,10 @@ public class PatientHomeActivity extends AppCompatActivity
             public void onProviderDisabled(String provider) { }
         };
 
+        // Initial permissions and status checks
         getGPSPermissions();
         checkGPSStatus();
         getFilePermissions();
-
 
     }
 
@@ -219,7 +217,6 @@ public class PatientHomeActivity extends AppCompatActivity
         helpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //sendHelp();
                 alertCarer();
             }
         });
@@ -245,11 +242,12 @@ public class PatientHomeActivity extends AppCompatActivity
             }
         });
 
-
         gpsAlertDialog = new AlertDialog.Builder(PatientHomeActivity.this).create();
         gpsAlertDialog.setTitle("Alert");
         gpsAlertDialog.setMessage("The GPS location on your device is currently disabled. Please enable it" +
                 " for full functionality of the app.");
+
+        // Sets up the button interface for the dialog
         gpsAlertDialog.setOnShowListener(new DialogInterface.OnShowListener()
         {
             @Override
@@ -281,7 +279,6 @@ public class PatientHomeActivity extends AppCompatActivity
                 });
             }
         });
-
         gpsAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) { }
         });
@@ -306,10 +303,12 @@ public class PatientHomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
+        // Runs the code required to load a .csv file
         if (requestCode == 10) {
             try { new LoadCSVFile().execute(findFilePath(data)); }
             catch (Exception e) { System.out.println("Failed to read file. Caught exception: " + e); }
         }
+        // Runs the code required to calibrate for the user's movement from a .csv file
         if (requestCode == 15)
         {
             try
@@ -339,6 +338,7 @@ public class PatientHomeActivity extends AppCompatActivity
         switch (requestCode)
         {
             case 1:
+                // If requested (by code 1) then the Patient's location is updated to the most recent available
                 currentPatient.setPatientLocation(fetchLocation());
                 break;
             default:
@@ -351,10 +351,10 @@ public class PatientHomeActivity extends AppCompatActivity
         Intent intent = new Intent(this, CarerInfoActivity.class);
         startActivity(intent);
     }
-//TODO needs changing to work with new account system: can now get carer details by calling CurrentCarer.getFirstName() etc
 
     public void updatePatientLocation()
     {
+        // Updates the Patient's GPS location to be used in making the Plus Code equivalent
         currentPatient.setPatientLocation(fetchLocation());
         System.out.println("Fetching location: " + currentPatient.getPatientLocation());
         try
@@ -378,6 +378,7 @@ public class PatientHomeActivity extends AppCompatActivity
 
     private void getGPSPermissions()
     {
+        // Opens a dialog using Android's built-in systems to request access to GPS location data
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -388,10 +389,12 @@ public class PatientHomeActivity extends AppCompatActivity
         }
     }
 
+    // Checks to see if the patient has enabled their GPS and prompts them to enable it if required
     private void checkGPSStatus() { if (!myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) { gpsAlertDialog.show(); } }
 
     private void getFilePermissions()
     {
+        // Opens a dialog using Android's built-in systems to request access to local storage
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
@@ -403,6 +406,7 @@ public class PatientHomeActivity extends AppCompatActivity
     }
 
     private class LoadCSVFile extends AsyncTask<String, Void, String> {
+        // Runs an asynchronous task to allow files to be loaded and used
         String TAG = "LoadCSVFiles Class";
         @Override
         protected void onPreExecute() { loadingFileDialog.show(); }
@@ -410,36 +414,30 @@ public class PatientHomeActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... theFilePath)
         {
+            // Loads the file in the background to help prevent system lock
             readFile(theFilePath[0]);
             return theFilePath[0];
         }
 
         private void readFile(String filePath) {
-            //StringBuilder allData = new StringBuilder();
             try
             {
+                // Iterates through a file line by line and stores the data in
                 if (filePath != "" && filePath != null)
                 {
-                    try
+                    String[] row;
+
+                    CSVReader reader = new CSVReader(new FileReader(Environment.getExternalStorageDirectory() + filePath));
+                    reader.readNext();
+
+                    while ((row = reader.readNext()) != null)
                     {
-                        CSVReader reader = new CSVReader(new FileReader(Environment.getExternalStorageDirectory() + filePath));
-
-                        String[] row;
-
-                        reader.readNext();
-                        while ((row = reader.readNext()) != null)
-                        {
-                            String[] csvData = row;//.split(",");
+                        String[] csvData = row;//.split(",");
 
                             sArray.add(Double.valueOf(csvData[2]));
                             xArray.add(Double.valueOf(csvData[3]));
                             yArray.add(Double.valueOf(csvData[4]));
                             zArray.add(Double.valueOf(csvData[5]));
-                        }
-                    }
-                    catch (java.io.IOException s)
-                    {
-                        System.out.println(s.getMessage());
                     }
                 }
             }
@@ -454,21 +452,26 @@ public class PatientHomeActivity extends AppCompatActivity
                 AccelerationData accDat = new AccelerationData();// = analyseFile();
                 accDat.setVals(sArray, xArray, yArray, zArray);
 
+                // Starts the calibration process
                 if (calibrating)
                 {
                     Calibration calTest = new Calibration();
 
                     currentPatient.setThresholdValue(calTest.calculateThreshold(sArray, calTest.sortVarArray(calTest.getVarArray(sArray, calTest.calculateMagnitude(xArray, yArray, zArray)))));
 
+                    // Waits until calibration is complete before dismissing the dialog
                     loadingFileDialog.hide();
 
                     calibrationDialog.setMessage("Calibration Complete! \nThreshold value: " + currentPatient.getThresholdValue());
                     calibrationDialog.show();
                     calibrating = false;
+
+                    updatePatientLocation();
                 }
                 else
                 {
                     loadingFileDialog.hide();
+                    // Determines if a help message needs to be sent to the Carer or not
                     if (accDat.isPatientHavingEpisode(currentPatient.getThresholdValue())){
                         messageAlertDialog.setMessage("Help message has been sent to the carer.");
                         messageAlertDialog.show();
@@ -478,29 +481,23 @@ public class PatientHomeActivity extends AppCompatActivity
                         messageAlertDialog.show();
                     }
                 }
+                // Clears the arrays to help prevent memory leaks
                 sArray.clear();
                 xArray.clear();
                 yArray.clear();
                 zArray.clear();
             }
-            try
-            {
-                currentPatient.setPatientLocation(fetchLocation());
-                URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
-                new SetPlusCode().execute(gpsURL);
-                System.out.println(currentPatient.getPatientPlusCode());
-            }
-            catch (Exception e) { }
         }
     }
 
     private class SetPlusCode extends AsyncTask<URL, Void, String> {
-
         String TAG = "PlusCodeClass";
 
+        // Needs to do HTTP requests - such as using an API - as part of an asynchronous task
         @Override
         protected String doInBackground(URL... theURL) {
             try {
+                // Uses the plus.codes API which returns a web page that needs to be parsed into a usable URL
                 JSONObject plusCodeJSON = getPlusCodeObject(theURL[0]);
                 String urlPlusCode = "https://plus.codes/" + plusCodeJSON.getJSONObject("plus_code").getString("global_code");
                 return urlPlusCode;
@@ -512,6 +509,7 @@ public class PatientHomeActivity extends AppCompatActivity
 
         private JSONObject getPlusCodeObject(URL theURL) {
             try {
+                // Converts the web page into a JSON object which can then be accessed by index
                 InputStream inStream = theURL.openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
                 String rawJSONString = readStream(reader);
@@ -523,7 +521,7 @@ public class PatientHomeActivity extends AppCompatActivity
         }
 
         private String readStream(Reader rd) throws IOException {
-
+            // Returns the String data from the web page
             StringBuilder strBuilder = new StringBuilder();
             int data;
             while ((data = rd.read()) != -1) {

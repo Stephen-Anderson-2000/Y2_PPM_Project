@@ -56,7 +56,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -91,7 +90,6 @@ public class WelcomeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     maxid = (dataSnapshot.getChildrenCount());
-
                 }
             }
 
@@ -100,7 +98,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
             }
         });
-
 
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,9 +108,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(getApplicationContext(), "Please select if you are a carer or patient and try again", Toast.LENGTH_SHORT);
                     }
-                } catch (Exception e) {
-
-                }
+                } catch (Exception e) { }
             }
         });
     }
@@ -130,7 +125,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 // Get new Instance ID token
                 String token = task.getResult().getToken();
-                //
                 sendRegistrationToServer(token);
 
 
@@ -152,7 +146,6 @@ public class WelcomeActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -167,11 +160,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 handleSignInResult(task);
 
             } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                // ...
+                // Google Sign In failed
             }
-
-
         }
     }
 
@@ -192,24 +182,13 @@ public class WelcomeActivity extends AppCompatActivity {
                             setAccountDetails(false, acct);
                             openPatientHomeActivity();
                         }
-
-
-                    } else {
-
-
-                        setCredentials();
-                    }
+                    } else { setCredentials(); }
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
             });
-
-        } catch (ApiException e) {
-
-        }
+        } catch (ApiException e) { }
     }
 
 
@@ -217,11 +196,9 @@ public class WelcomeActivity extends AppCompatActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         nameBox.setText(account.getGivenName());
         emailBox.setText(account.getEmail());
-
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -230,12 +207,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = auth.getCurrentUser();
-
-                        } else {
-
-                        }
-
-                        // ...
+                        } else { }
                     }
                 });
     }
@@ -244,12 +216,8 @@ public class WelcomeActivity extends AppCompatActivity {
     CompoundButton.OnCheckedChangeListener changeChecker = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (buttonView == patientToggle) {
-                carerToggle.setChecked(false);
-            }
-            if (buttonView == carerToggle) {
-                patientToggle.setChecked(false);
-            }
+            if (buttonView == patientToggle) { carerToggle.setChecked(false); }
+            if (buttonView == carerToggle) { patientToggle.setChecked(false); }
         }
     };
 
@@ -273,13 +241,8 @@ public class WelcomeActivity extends AppCompatActivity {
         String email = emailBox.getText().toString();
         boolean isCarer = true;
 
-
-
-        if (carerToggle.isChecked()) {
-            isCarer = true;
-        } else {
-            isCarer = false;
-        }
+        if (carerToggle.isChecked()) { isCarer = true; }
+        else { isCarer = false; }
 
         account = new Account();
         account.setFirstName(firstName);
@@ -291,20 +254,13 @@ public class WelcomeActivity extends AppCompatActivity {
         setFMCToken(); //sets cloud id
         reff.setValue(account);
 
-
-        if (isCarer) {
-            openCarerHomeActivity();
-        } else {
-            openPatientHomeActivity();
-        }
-
+        if (isCarer) { openCarerHomeActivity(); }
+        else { openPatientHomeActivity(); }
     }
 
-        static Account getAccountDetails() {
-            return account;
-        }
+    static Account getAccountDetails() { return account; }
 
-        private void setAccountDetails ( boolean isCarer, GoogleSignInAccount acct){
+    private void setAccountDetails ( boolean isCarer, GoogleSignInAccount acct) {
             account = new Account();
             account.setFirstName(acct.getGivenName());
             account.setLastName(acct.getFamilyName());
@@ -314,8 +270,8 @@ public class WelcomeActivity extends AppCompatActivity {
             account.setMobileNumber("");
             account.setHasCarer(false);
             setFMCToken();
-        }
     }
+}
 
 
 
