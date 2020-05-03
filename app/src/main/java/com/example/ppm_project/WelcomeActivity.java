@@ -49,9 +49,6 @@ import com.google.firebase.iid.InstanceIdResult;
 
 public class WelcomeActivity extends AppCompatActivity {
     private static final String TAG = "WelcomeActivity";
-    private static String READ_SMS;
-    private static String READ_PHONE_STATE;
-    private static String READ_PHONE_NUMBERS;
     private ToggleButton patientToggle;
     private ToggleButton carerToggle;
     private Button ok;
@@ -63,11 +60,6 @@ public class WelcomeActivity extends AppCompatActivity {
     private DatabaseReference reff;
     private static Account account;
     private long maxid = 0;
-
-
-    public int enteredUserID = -1;
-    public AccountList theAccounts = new AccountList();
-    CurrentUserID currentUserID = new CurrentUserID();
 
 
     @Override
@@ -138,8 +130,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 }
             }
         });
-
-        //askForID();
     }
 
     private void setFMCToken() {
@@ -339,44 +329,6 @@ public class WelcomeActivity extends AppCompatActivity {
             account.setHasCarer(false);
             setFMCToken();
         }
-
-        //Needed to read mobile number of users phone
-    /*
-    private String getMobileNumber() {
-        String mPhoneNumber = null;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                TelephonyManager tMgr = (TelephonyManager)   this.getSystemService(Context.TELEPHONY_SERVICE);
-                mPhoneNumber = tMgr.getLine1Number();
-                return mPhoneNumber;
-            }
-        else {
-                requestPermission();
-                return mPhoneNumber;
-            }
-
-    }
-
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{READ_SMS, READ_PHONE_NUMBERS, READ_PHONE_STATE}, 100);
-        }
-    }
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 100:
-                TelephonyManager tMgr = (TelephonyManager)  this.getSystemService(Context.TELEPHONY_SERVICE);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) !=
-                        PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED  &&
-                        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) !=      PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                String mPhoneNumber = tMgr.getLine1Number();
-                break;
-        }
-    } */
-
-
     }
 
 

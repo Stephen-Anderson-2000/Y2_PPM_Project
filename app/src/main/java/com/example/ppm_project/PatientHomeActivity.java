@@ -81,8 +81,6 @@ public class PatientHomeActivity extends AppCompatActivity
     private static Carer CurrentCarer = CarerInfoActivity.getAccountDetails();
     Patient currentPatient;
     public static PatientHomeActivity PatientHomeActivity;
-    private String currentCarerToken = "";
-    private DatabaseReference reff;
 
 
     @Override
@@ -122,56 +120,8 @@ public class PatientHomeActivity extends AppCompatActivity
         checkGPSStatus();
         getFilePermissions();
 
-       // askForCarerName();
 
     }
-
-    /*
-    private void askForCarerName() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter your current carers ID Number");
-
-        // Set up the input
-        final EditText input = new EditText(this);
-        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-        // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                getCarerToken(input.getText().toString());
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
-    }
-
-    private void getCarerToken(String carerNumber) {
-        reff = FirebaseDatabase.getInstance().getReference("account").child(carerNumber);
-
-        reff.addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentCarerToken = dataSnapshot.child("cloudID").getValue().toString();
-                Log.i(TAG, "Carers FCM Token: " + currentCarerToken);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-    */
 
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -198,14 +148,10 @@ public class PatientHomeActivity extends AppCompatActivity
 
                 JSONArray registration_ids = new JSONArray();
                 registration_ids.put(CurrentCarer.getCloudID());
-                //registration_ids.put("cAOkmSJTcHE:APA91bGZBZBtt1Dac62lu8cR_I50oML3AhyRtndKmD_JllANa60ALQHOWDYj4qoUCu8JnxgU7irOo3he3B7oPihpgDsAQEdMTorwXawA48mDmPygNs_oRd16Mrodppjk6pfIXePT9hsD"); //debug testing
 
                 params.put("registration_ids", registration_ids);
 
                 JSONObject dataObject = new JSONObject();
-                //notificationObject.put("body", "Patient Needs help!");
-                //notificationObject.put("title", "Alert");
-                //notificationObject.put("click_action", ".Services.NotificationClick");
 
                 dataObject.put("text", "Patient Needs Help!");
                 dataObject.put("link", currentPatient.getPatientPlusCode());
@@ -431,41 +377,6 @@ public class PatientHomeActivity extends AppCompatActivity
         }
         catch (Exception e) { Log.v(TAG, "Caught error in updatePatientLocation", e); }
     }
-
-/*    public void sendHelp()
-    {
-        try
-        {
-            if (myLocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                Carer theCarer = currentPatient.getTheCarer();
-
-                currentPatient.setPatientLocation(fetchLocation());
-                URL gpsURL = new URL("https://plus.codes/api?address=" + currentPatient.getPatientLocation().getLatitude() + "," + currentPatient.getPatientLocation().getLongitude());
-                new SetPlusCode().execute(gpsURL);
-
-                currentPatient.sendHelpMessage();
-
-               // if (currentPatient.getPatientLocation() != null && currentPatient.getPatientPlusCode() != null)
-               // {
-                //    messageAlertDialog.setMessage("The carer: " + theCarer.getFirstName() + "\nReceived the message from: " + theCarer.getTheReceivedMessage().getSender().getFirstName() +
-                        //    "\n\nTheir GPS location is: " + currentPatient.getPatientLocation() + "\n\n Their plus code is: " + currentPatient.getPatientPlusCode().substring(19));
-                    // substring start index is 19 to remove the rest of the plus code's url
-              //  }
-              //  else
-              //  {
-               //     messageAlertDialog.setMessage("Currently locations are null, will take a few seconds to update. Message sent anyway.");
-              //  }
-              //  messageAlertDialog.show();
-          //  }
-         //   else
-          //  {
-            //    checkGPSStatus();
-           // }
-        }
-        catch (SecurityException e) { Log.e(TAG, "Location permission not granted.", e); }
-        catch (MalformedURLException e) {Log.e(TAG, "Error making gps url", e); }
-    }
-*/
 
     private Location fetchLocation()
     {

@@ -42,14 +42,6 @@ public class AccelerationData
 
         return false;
 
-        /*
-        for (int i = 0; i < totalResults.size(); i++) {
-            if (totalResults.get(i) > threshold) {
-                return true;
-            }
-        }
-        return false;
-        */
     }
 
     // Calculates the mean of an array by iterating through.
